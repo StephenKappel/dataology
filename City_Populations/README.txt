@@ -1,0 +1,1 @@
+To view d3 visualization in action, go to: http://rawgithub.com/StephenKappel/dataology/master/City_Populations/city_pops.html
