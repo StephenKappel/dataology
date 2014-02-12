@@ -55,4 +55,47 @@ class DAL:
             """, category, company, nativeId, dispName, category, company, nativeId, dispName)
         self.connection.commit()
 
+    def getForumsList (self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT [ID]
+                ,[Name]
+            FROM [Forums].[dbo].[Forums]
+            WHERE [Name] LIKE 'sql%' or [Name] LIKE 'sharepoint%'
+            """)
+        rows = cursor.fetchall()
+        forums = dict()
+        for row in rows:
+            forums[row.Name] = row.ID
+        return forums
+
+    def addThread (self, threadId, forumId):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            MERGE
+	            [Forums].[dbo].[Threads] AS target
+                USING (select ?,?) AS source ([Forum_ID],[Native_Identifier])
+                ON (target.[Native_Identifier] = source.[Native_Identifier])
+	        WHEN NOT MATCHED THEN
+	            INSERT
+                   ([Forum_ID]
+                   ,[Native_Identifier])
+                VALUES
+                   (?,?);
+            """,  forumId, threadId, forumId, threadId)
+        self.connection.commit()
+
+    def getThreadsList (self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT TOP 10 [ID]
+              ,[Native_Identifier]
+            FROM [Forums].[dbo].[Threads]
+            """)
+        rows = cursor.fetchall()
+        threads = dict()
+        for row in rows:
+            threads[row.Native_Identifier] = row.ID
+        return threads
+
 
