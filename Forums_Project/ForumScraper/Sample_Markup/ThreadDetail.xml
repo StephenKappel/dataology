@@ -1,0 +1,138 @@
+<root>
+  <thread id="97f47915-5237-4a4b-ad01-391f13d535ea" discussionGroupId="e21e7118-4af4-4b36-82af-289d41705113" authorId="664b6985-ba06-4cf2-90b5-c8d63acc0f34" locked="false" type="question" threadType="question" answered="false" replies="0" views="77" subscribers="1" hasAbusive="false">
+    <topic>Add a language property to the profile</topic>
+    <createdOn>2014-02-10 01:06:10Z</createdOn>
+    <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/add-a-language-property-to-the-profile?forum=suggest</url>
+    <feed>
+      <title>Add a language property to the profile</title>
+      <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea?Name=suggest&amp;outputAs=rss</url>
+    </feed>
+  </thread>
+  <messages>
+    <message id="97f47915-5237-4a4b-ad01-391f13d535ea" threadId="97f47915-5237-4a4b-ad01-391f13d535ea" root="true" authorId="664b6985-ba06-4cf2-90b5-c8d63acc0f34" helpfulVotes="1" hasCode="false" abusive="false" showUserCards="true">
+      <createdOn>2014-02-10 01:06:10Z</createdOn>
+      <body>&lt;p&gt;Hello,&lt;/p&gt;
+&lt;p&gt;I think that you should add a language property to the profile because it can help a lot in communication.&lt;/p&gt;
+&lt;p&gt;Sometimes people post something and they don't post any question, they just post the code and write nothing at all besides it, probably because they can't write in English so by knowing their language or at least country we can speak to them in their own
+ language or at least write a reply and then ask someone else to ask this person why she doesn't write any text&amp;nbsp; whatsoever.&lt;br/&gt;
+&lt;/p&gt;
+&lt;p&gt;Happens to me few times in the C# forum so I thought it's a good idea to consider.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Regards, Eyal Shilony&lt;/p&gt;</body>
+      <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/add-a-language-property-to-the-profile?forum=suggest#97f47915-5237-4a4b-ad01-391f13d535ea</url>
+      <status></status>
+      <deleted>false</deleted>
+      <histories />
+      <attachmentIds></attachmentIds>
+    </message>
+  </messages>
+  <users>
+    <user id="664b6985-ba06-4cf2-90b5-c8d63acc0f34">
+      <displayName>Eyal Shilony</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>false</mvp>
+      <partner>false</partner>
+      <mcc>false</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=eyal+shilony&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=eyal+shilony&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=eyal+shilony&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/eyal%20shilony/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/add-a-language-property-to-the-profile?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-12 21:22:12Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Eyal%20Shilony</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>4961</points>
+      <posts>2450</posts>
+      <answers>539</answers>
+      <stars>3</stars>
+    </user>
+    <user id="664b6985-ba06-4cf2-90b5-c8d63acc0f34">
+      <displayName>Eyal Shilony</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>false</mvp>
+      <partner>false</partner>
+      <mcc>false</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=eyal+shilony&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=eyal+shilony&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=eyal+shilony&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/eyal%20shilony/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/add-a-language-property-to-the-profile?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-12 21:22:12Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Eyal%20Shilony</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>4961</points>
+      <posts>2450</posts>
+      <answers>539</answers>
+      <stars>3</stars>
+    </user>
+  </users>
+  <principal authenticated="false">
+    <thread id="97f47915-5237-4a4b-ad01-391f13d535ea">
+      <delete url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/delete">false</delete>
+      <undelete url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/undelete">false</undelete>
+      <lock url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/lock">false</lock>
+      <unlock url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/unlock">false</unlock>
+      <sticky url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/sticky">false</sticky>
+      <clearSticky url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/clearSticky">false</clearSticky>
+      <move url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/move">false</move>
+      <merge url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/merge">false</merge>
+      <changeType url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/changeType">false</changeType>
+      <subscribe url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/subscribe">false</subscribe>
+      <unsubscribe url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/unsubscribe">false</unsubscribe>
+      <assign url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/assign">false</assign>
+      <edit url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/edit">false</edit>
+      <unJoin url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/action/unJoin">false</unJoin>
+      <join url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2f97f47915-5237-4a4b-ad01-391f13d535ea%2fadd-a-language-property-to-the-profile%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">false</join>
+    </thread>
+    <message id="97f47915-5237-4a4b-ad01-391f13d535ea">
+      <reply url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2f97f47915-5237-4a4b-ad01-391f13d535ea%2fadd-a-language-property-to-the-profile%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</reply>
+      <quote url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2f97f47915-5237-4a4b-ad01-391f13d535ea%2fadd-a-language-property-to-the-profile%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</quote>
+      <voteHelpful url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2f97f47915-5237-4a4b-ad01-391f13d535ea%2fadd-a-language-property-to-the-profile%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</voteHelpful>
+      <setAnswer url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/setAnswer">false</setAnswer>
+      <unsetAnswer url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/setAnswer">false</unsetAnswer>
+      <proposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/proposeAnswer">false</proposeAnswer>
+      <unproposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/proposeAnswer">false</unproposeAnswer>
+      <delete url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/delete">false</delete>
+      <undelete url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/delete">false</undelete>
+      <reportAbuse url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/reportAbuse">true</reportAbuse>
+      <AbusiveMenus>
+        <item type="menu">
+          <name>Abusive</name>
+          <displayName>Report as abuse</displayName>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Spam/advertising</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/reportAbuse?type=SPAMOrAdvertising</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Profanity</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/reportAbuse?type=Profanity</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Inappropriate/adult content</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/reportAbuse?type=InappropriateOrAdultContent</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Off topic/irrelevant posts</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/reportAbuse?type=OffTopicOrIrrelevantPosts</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Other terms of use or code of conduct violation</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/reportAbuse?type=OtherTermofUseOrCodeofConductviolation</url>
+          </item>
+        </item>
+      </AbusiveMenus>
+      <clearAbuse url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/reportAbuse">false</clearAbuse>
+      <split url="http://social.msdn.microsoft.com/Forums/en-US/97f47915-5237-4a4b-ad01-391f13d535ea/97f47915-5237-4a4b-ad01-391f13d535ea/split">false</split>
+    </message>
+  </principal>
+  <preferences>
+    <threadViewMode>List</threadViewMode>
+    <groupAnswers>false</groupAnswers>
+    <autoUpdates>false</autoUpdates>
+  </preferences>
+</root>

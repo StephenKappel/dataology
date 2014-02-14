@@ -1,0 +1,344 @@
+<root>
+  <thread id="c9e731a1-25ec-402c-8197-df2826bca459" discussionGroupId="e21e7118-4af4-4b36-82af-289d41705113" authorId="5bcb49e5-6fda-48a8-9f2d-948c215981d1" locked="false" type="answer" threadType="answer" answered="true" replies="2" views="225" subscribers="3" hasAbusive="false">
+    <topic>Partner Forums</topic>
+    <createdOn>2014-01-08 02:10:51Z</createdOn>
+    <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest</url>
+    <lastReply id="c8a824cd-893f-46e9-bd15-34d231d06945" date="2014-01-08 03:23:57Z" />
+    <feed>
+      <title>Partner Forums</title>
+      <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459?Name=suggest&amp;outputAs=rss</url>
+    </feed>
+  </thread>
+  <messages>
+    <message id="c9e731a1-25ec-402c-8197-df2826bca459" threadId="c9e731a1-25ec-402c-8197-df2826bca459" root="true" authorId="5bcb49e5-6fda-48a8-9f2d-948c215981d1" helpfulVotes="0" hasCode="false" abusive="false" showUserCards="true">
+      <createdOn>2014-01-08 02:10:51Z</createdOn>
+      <body>&lt;p&gt;Hello, I was wondering if they still have the Private Partner Forums? I use to be part of the Partner program. I need faster responses to my questions when I have issues and right now these forums are taking 2 weeks to get a response. I just need to get
+ better support when I am working on major projects for my customers.&lt;/p&gt;
+&lt;p&gt;Thanks!&lt;/p&gt;
+&lt;p&gt;Brian &lt;/p&gt;</body>
+      <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest#c9e731a1-25ec-402c-8197-df2826bca459</url>
+      <status></status>
+      <deleted>false</deleted>
+      <histories />
+      <attachmentIds></attachmentIds>
+    </message>
+    <message id="56961a7f-ad5e-43ee-a3a0-44cfe687ab9b" threadId="c9e731a1-25ec-402c-8197-df2826bca459" parent="c9e731a1-25ec-402c-8197-df2826bca459" authorId="2bc75828-4702-4bc3-b64c-d1f6cd894dcc" helpfulVotes="1" hasCode="false" abusive="false" showUserCards="true">
+      <createdOn>2014-01-08 02:47:41Z</createdOn>
+      <body>&lt;p&gt;Yes, partner forums are over here.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://partnersupport.microsoft.com/en-us/site/completesignin?silent=False&amp;wa=wsignin1.0"&gt;https://partnersupport.microsoft.com/en-us/site/completesignin?silent=False&amp;amp;wa=wsignin1.0&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;a href="https://partnersupport.microsoft.com/en-us/site/completesignin?silent=False&amp;wa=wsignin1.0"&gt;&lt;/a&gt;&lt;/p&gt;&lt;hr class="sig"&gt;&lt;p&gt;Regards, Dave Patrick .... &lt;br/&gt;
+Microsoft Certified Professional &lt;br/&gt;
+Microsoft MVP [Windows] &lt;br/&gt;
+&lt;br/&gt;
+Disclaimer: This posting is provided &amp;quot;AS IS&amp;quot; with no warranties or guarantees , and confers no rights.&lt;/p&gt;</body>
+      <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest#56961a7f-ad5e-43ee-a3a0-44cfe687ab9b</url>
+      <answer>true</answer>
+      <status>answer</status>
+      <deleted>false</deleted>
+      <histories>
+        <history>
+          <type>MarkAnswer</type>
+          <date>2014-01-09 22:39:46Z</date>
+          <user>35b01953-166d-4fdf-bd37-cf9f026e57b6</user>
+        </history>
+        <history>
+          <type>ProposeAnswer</type>
+          <date>2014-01-08 03:13:51Z</date>
+          <user>7771088b-ece5-43b9-95e5-d4eaee1990b5</user>
+        </history>
+      </histories>
+      <attachmentIds></attachmentIds>
+    </message>
+    <message id="c8a824cd-893f-46e9-bd15-34d231d06945" threadId="c9e731a1-25ec-402c-8197-df2826bca459" parent="56961a7f-ad5e-43ee-a3a0-44cfe687ab9b" authorId="5bcb49e5-6fda-48a8-9f2d-948c215981d1" helpfulVotes="0" hasCode="false" abusive="false" showUserCards="true">
+      <createdOn>2014-01-08 03:23:57Z</createdOn>
+      <body>&lt;p&gt;Thanks,&amp;nbsp; These Forums are just too long for guys in the field!&amp;nbsp; :)&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;Brian&lt;/p&gt;</body>
+      <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest#c8a824cd-893f-46e9-bd15-34d231d06945</url>
+      <status></status>
+      <deleted>false</deleted>
+      <histories />
+      <attachmentIds></attachmentIds>
+    </message>
+  </messages>
+  <users>
+    <user id="5bcb49e5-6fda-48a8-9f2d-948c215981d1">
+      <displayName>Brian at ProTech</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>false</mvp>
+      <partner>true</partner>
+      <mcc>false</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/brian%20at%20protech/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-12 18:47:29Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Brian%20at%20ProTech</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>0</points>
+      <posts>34</posts>
+      <answers>1</answers>
+      <stars>0</stars>
+    </user>
+    <user id="5bcb49e5-6fda-48a8-9f2d-948c215981d1">
+      <displayName>Brian at ProTech</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>false</mvp>
+      <partner>true</partner>
+      <mcc>false</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/brian%20at%20protech/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-12 18:47:29Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Brian%20at%20ProTech</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>0</points>
+      <posts>34</posts>
+      <answers>1</answers>
+      <stars>0</stars>
+    </user>
+    <user id="2bc75828-4702-4bc3-b64c-d1f6cd894dcc">
+      <displayName>Dave Patrick</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>true</mvp>
+      <partner>false</partner>
+      <mcc>true</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=dave+patrick&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=dave+patrick&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=dave+patrick&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/dave%20patrick/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-12 10:36:09Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Dave%20Patrick</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>16501</points>
+      <posts>9401</posts>
+      <answers>3743</answers>
+      <stars>5</stars>
+    </user>
+    <user id="35b01953-166d-4fdf-bd37-cf9f026e57b6">
+      <displayName>Naomi  N</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>false</mvp>
+      <partner>true</partner>
+      <mcc>false</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=naomi++n&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=naomi++n&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=naomi++n&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/naomi%20%20n/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-12 23:16:03Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Naomi%20%20N</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>86767</points>
+      <posts>31998</posts>
+      <answers>10365</answers>
+      <stars>5</stars>
+      <role>Moderator</role>
+    </user>
+    <user id="7771088b-ece5-43b9-95e5-d4eaee1990b5">
+      <displayName>Mike Laughlin</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>false</mvp>
+      <partner>false</partner>
+      <mcc>false</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=mike+laughlin&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=mike+laughlin&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=mike+laughlin&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/mike%20laughlin/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-13 00:37:47Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Mike%20Laughlin</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>0</points>
+      <posts>4588</posts>
+      <answers>1188</answers>
+      <stars>0</stars>
+    </user>
+    <user id="5bcb49e5-6fda-48a8-9f2d-948c215981d1">
+      <displayName>Brian at ProTech</displayName>
+      <msft>false</msft>
+      <mscs>false</mscs>
+      <mvp>false</mvp>
+      <partner>true</partner>
+      <mcc>false</mcc>
+      <smallImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=small</smallImage>
+      <largeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=large</largeImage>
+      <xlargeImage>http://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=brian+at+protech&amp;size=extralarge</xlargeImage>
+      <url>http://social.msdn.microsoft.com/profile/brian%20at%20protech/?type=forum&amp;referrer=http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/partner-forums?forum=suggest&amp;outputAs=xml</url>
+      <lastActive>2014-02-12 18:47:29Z</lastActive>
+      <threadsUrl>http://social.msdn.microsoft.com/Forums/en-US/user/threads?user=Brian%20at%20ProTech</threadsUrl>
+      <isInappropriate>true</isInappropriate>
+      <points>0</points>
+      <posts>34</posts>
+      <answers>1</answers>
+      <stars>0</stars>
+    </user>
+  </users>
+  <principal authenticated="false">
+    <thread id="c9e731a1-25ec-402c-8197-df2826bca459">
+      <delete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/delete">false</delete>
+      <undelete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/undelete">false</undelete>
+      <lock url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/lock">false</lock>
+      <unlock url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/unlock">false</unlock>
+      <sticky url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/sticky">false</sticky>
+      <clearSticky url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/clearSticky">false</clearSticky>
+      <move url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/move">false</move>
+      <merge url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/merge">false</merge>
+      <changeType url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/changeType">false</changeType>
+      <subscribe url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/subscribe">false</subscribe>
+      <unsubscribe url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/unsubscribe">false</unsubscribe>
+      <assign url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/assign">false</assign>
+      <edit url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/edit">false</edit>
+      <unJoin url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/action/unJoin">false</unJoin>
+      <join url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">false</join>
+    </thread>
+    <message id="c8a824cd-893f-46e9-bd15-34d231d06945">
+      <reply url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</reply>
+      <quote url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</quote>
+      <voteHelpful url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</voteHelpful>
+      <setAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/setAnswer">false</setAnswer>
+      <unsetAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/setAnswer">false</unsetAnswer>
+      <proposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/proposeAnswer">false</proposeAnswer>
+      <unproposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/proposeAnswer">false</unproposeAnswer>
+      <delete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/delete">false</delete>
+      <undelete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/delete">false</undelete>
+      <reportAbuse url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/reportAbuse">true</reportAbuse>
+      <AbusiveMenus>
+        <item type="menu">
+          <name>Abusive</name>
+          <displayName>Report as abuse</displayName>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Spam/advertising</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/reportAbuse?type=SPAMOrAdvertising</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Profanity</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/reportAbuse?type=Profanity</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Inappropriate/adult content</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/reportAbuse?type=InappropriateOrAdultContent</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Off topic/irrelevant posts</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/reportAbuse?type=OffTopicOrIrrelevantPosts</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Other terms of use or code of conduct violation</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/reportAbuse?type=OtherTermofUseOrCodeofConductviolation</url>
+          </item>
+        </item>
+      </AbusiveMenus>
+      <clearAbuse url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/reportAbuse">false</clearAbuse>
+      <split url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/split">false</split>
+      <edit url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c8a824cd-893f-46e9-bd15-34d231d06945/edit">false</edit>
+    </message>
+    <message id="56961a7f-ad5e-43ee-a3a0-44cfe687ab9b">
+      <reply url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</reply>
+      <quote url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</quote>
+      <voteHelpful url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</voteHelpful>
+      <setAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/setAnswer">false</setAnswer>
+      <unsetAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/setAnswer">false</unsetAnswer>
+      <proposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/proposeAnswer">false</proposeAnswer>
+      <unproposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/proposeAnswer">false</unproposeAnswer>
+      <delete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/delete">false</delete>
+      <undelete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/delete">false</undelete>
+      <reportAbuse url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/reportAbuse">true</reportAbuse>
+      <AbusiveMenus>
+        <item type="menu">
+          <name>Abusive</name>
+          <displayName>Report as abuse</displayName>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Spam/advertising</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/reportAbuse?type=SPAMOrAdvertising</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Profanity</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/reportAbuse?type=Profanity</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Inappropriate/adult content</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/reportAbuse?type=InappropriateOrAdultContent</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Off topic/irrelevant posts</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/reportAbuse?type=OffTopicOrIrrelevantPosts</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Other terms of use or code of conduct violation</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/reportAbuse?type=OtherTermofUseOrCodeofConductviolation</url>
+          </item>
+        </item>
+      </AbusiveMenus>
+      <clearAbuse url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/reportAbuse">false</clearAbuse>
+      <split url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/split">false</split>
+      <edit url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/56961a7f-ad5e-43ee-a3a0-44cfe687ab9b/edit">false</edit>
+    </message>
+    <message id="c9e731a1-25ec-402c-8197-df2826bca459">
+      <reply url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</reply>
+      <quote url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</quote>
+      <voteHelpful url="https://login.live.com/login.srf?wa=wsignin1.0&amp;wtrealm=social.msdn.microsoft.com&amp;wreply=https%3a%2f%2fsocial.msdn.microsoft.com%2fForums%2fen-US%2fc9e731a1-25ec-402c-8197-df2826bca459%2fpartner-forums%3fforum%3dsuggest%26outputAs%3dxml%26prof%3drequired%26stoAI%3d10&amp;wp=MBI_FED_SSL&amp;wlcxt=microsoft%24microsoft%24microsoft">true</voteHelpful>
+      <setAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/setAnswer">false</setAnswer>
+      <unsetAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/setAnswer">false</unsetAnswer>
+      <proposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/proposeAnswer">false</proposeAnswer>
+      <unproposeAnswer url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/proposeAnswer">false</unproposeAnswer>
+      <delete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/delete">false</delete>
+      <undelete url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/delete">false</undelete>
+      <reportAbuse url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/reportAbuse">true</reportAbuse>
+      <AbusiveMenus>
+        <item type="menu">
+          <name>Abusive</name>
+          <displayName>Report as abuse</displayName>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Spam/advertising</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/reportAbuse?type=SPAMOrAdvertising</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Profanity</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/reportAbuse?type=Profanity</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Inappropriate/adult content</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/reportAbuse?type=InappropriateOrAdultContent</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Off topic/irrelevant posts</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/reportAbuse?type=OffTopicOrIrrelevantPosts</url>
+          </item>
+          <item type="link" selected="false">
+            <name>reportAbuse</name>
+            <displayName>Other terms of use or code of conduct violation</displayName>
+            <url>http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/reportAbuse?type=OtherTermofUseOrCodeofConductviolation</url>
+          </item>
+        </item>
+      </AbusiveMenus>
+      <clearAbuse url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/reportAbuse">false</clearAbuse>
+      <split url="http://social.msdn.microsoft.com/Forums/en-US/c9e731a1-25ec-402c-8197-df2826bca459/c9e731a1-25ec-402c-8197-df2826bca459/split">false</split>
+    </message>
+  </principal>
+  <preferences>
+    <threadViewMode>List</threadViewMode>
+    <groupAnswers>false</groupAnswers>
+    <autoUpdates>false</autoUpdates>
+  </preferences>
+</root>

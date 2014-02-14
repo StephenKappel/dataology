@@ -11,7 +11,7 @@ class MsdnScraper():
 
     # the contents of this html file were attained by going to http://social.msdn.microsoft.com/Forums/en-US/home
     # selecting the [ View All ] link, inspecting the element of the dialog box, and saving the exposed DOM
-    FORUM_CATALOG_PATH = "C:\\Users\\Stephen\\Documents\\GitHub\\dataology\\Forums_Project\\ForumScraper\\MsdnForumsCatalog.html"
+    FORUM_CATALOG_PATH = "C:\\Users\\Stephen\\Documents\\GitHub\\dataology\\Forums_Project\\ForumScraper\\Sample_Markup\\MsdnForumsCatalog.html"
     FORUM_DETAILS_API_STUB = "http://social.msdn.microsoft.com/Forums/api/category/getforumdetails?category="
     THREAD_LIST_URL_STUB = "http://social.msdn.microsoft.com/Forums/en-US/home?filter=alltypes&sort=firstpostdesc"
     THREAD_URL_STUB = "http://social.msdn.microsoft.com/Forums/en-US/###?outputAs=xml"
@@ -32,9 +32,10 @@ class MsdnScraper():
         for cat in categories:
 
             #save category information to categories table in database
+            catID = cat.get("data-categoryid")
             catName = cat.get("data-categoryname")
             catTitle = cat.find(class_="categoryHeaderText").get("title")
-            self.myDal.addCategory(catName, "MS", cat.get("data-categoryid"), catTitle)
+            self.myDal.addCategory(catName, "MS", catID, catTitle)
 
             #use category names to make api requests and get details of specific forums
             with urllib.request.urlopen(self.FORUM_DETAILS_API_STUB + catName) as rawJson:
@@ -43,7 +44,7 @@ class MsdnScraper():
 
             #save forums details to Forums table in database
             for i in range(len(data)):
-                self.myDal.addForum(data[i]["Name"], "MS", data[i]["ForumId"], data[i]["Description"], catName, data[i]["DisplayName"])
+                self.myDal.addForum(data[i]["Name"], "MS", data[i]["ForumId"], data[i]["Description"], catID, data[i]["DisplayName"])
                 count += 1
 
             print (i, " forums added or updated, for ", catName)
@@ -64,7 +65,7 @@ class MsdnScraper():
         for forumKey in forums.keys():
             print("getting threads for " + forumKey)
             forumId = forums[forumKey]
-            for i in range(25):
+            for i in range(1,26):
                 gotSome = False
                 url = self.THREAD_LIST_URL_STUB + "&forum=" + forumKey + "&page=" + str(i)
                 soup = BeautifulSoup(urllib.request.urlopen(url))
@@ -78,14 +79,19 @@ class MsdnScraper():
 
     def scrapeThreadDetail(self):
 
-        threads = self.myDal.getThreadList()
-        for threadKey in threads.keys():
-            threadId = threads[threadKey]
-            url = self.THREAD_URL_STUB.replace("###", threadKey)
-            soup = BeautifulSoup(urllib.request.urlopen(url))
+        i = 1
+        threads = self.myDal.getThreadsList()
+        for threadId in threads:
+            url = self.THREAD_URL_STUB.replace("###", threadId)
+            print (url)
+            i += 1
+            if (i > 5):
+                break
+            #soup = BeautifulSoup(urllib.request.urlopen(url))
             ## TODO: scrape thread details and write to database
 
 myScraper = MsdnScraper()
 #myScraper.scrapeForumsList()
-#myScraper.scrapeThreadsList()
+myScraper.scrapeThreadsList()
+#myScraper.scrapeThreadDetail()
 
