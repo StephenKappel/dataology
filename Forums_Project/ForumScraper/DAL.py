@@ -58,10 +58,11 @@ class DAL:
     def getForumsList (self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT [ID]
-                ,[Name]
-            FROM [Forums].[dbo].[Forums]
-            WHERE [Name] LIKE 'sql%' or [Name] LIKE 'sharepoint%'
+            SELECT distinct f.[ID]
+                ,f.[Name]
+            FROM [Forums].[dbo].[Forums] f
+            LEFT OUTER JOIN [Forums].[dbo].[Threads] t ON f.ID = t.Forum_ID
+            WHERE ((f.[Name] LIKE 'sql%' or f.[Name] LIKE 'sharepoint%') AND t.ID IS NULL) or f.[Name] = 'sharepointgeneralprevious'
             """)
         rows = cursor.fetchall()
         forums = dict()
@@ -88,8 +89,9 @@ class DAL:
     def getThreadsList (self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT TOP 10 [ID]
+            SELECT TOP 1000 [ID]
             FROM [Forums].[dbo].[Threads]
+            WHERE Title IS NULL
             """)
         rows = cursor.fetchall()
         threads = list()
@@ -97,47 +99,87 @@ class DAL:
             threads.append(row.ID)
         return threads
 
-    def addThreadDetails(self, threadId, title, views, subscribers, question, hasCode, createdOn, answeredOn, replies,
-                         contributors, authorId, answererId, lastReplyOn):
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            MERGE
-	            [Forums].[dbo].[Threads] AS target
-                USING (select ?,?,?,?,?,?,?,?,?,?,?,?,?) AS source  ([ID]
-           ,[Title]
-           ,[Views]
-           ,[Subscribers]
-           ,[Question]
-           ,[Has_Code]
-           ,[Created_On]
-           ,[Answered_On]
-           ,[Replies]
-           ,[Contributors]
-           ,[Author_ID]
-           ,[Answerer_ID]
-           ,[Last_Reply_On])
-                ON (target.[ID] = source.[ID])
-	        WHEN NOT MATCHED THEN
-	            INSERT INTO [dbo].[Threads]
-                   ([Title]
-           ,[Views]
-           ,[Subscribers]
-           ,[Question]
-           ,[Has_Code]
-           ,[Created_On]
-           ,[Answered_On]
-           ,[Replies]
-           ,[Contributors]
-           ,[Author_ID]
-           ,[Answerer_ID]
-           ,[Last_Reply_On])
-                VALUES
-                   (?,?,?,?,?,?,?,?,?,?,?,?)
+    def addThreadDetails(self, threads):
+        for thr in threads:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                UPDATE [Forums].[dbo].[Threads] SET
+                      [Title] = ?
+                      ,[Question] = ?
+                      ,[Views] = ?
+                      ,[Subscribers] = ?
+                      ,[Created_On] = ?
+                      ,[Answered_On] = ?
+                      ,[Last_Post_On] = ?
+                      ,[Answer_Has_Code] = ?
+                      ,[First_Post_Has_Code] = ?
+                    WHERE [ID] = ?
+            """, thr.title, thr.question, thr.views, thr.subscribers, thr.createdOn, thr.answeredOn,
+                           thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.id)
+            self.connection.commit()
 
-            INSERT INTO [dbo].[Threads]
-        """, threadId, title, views, subscribers, question, hasCode, createdOn, answeredOn, replies,
-                         contributors, authorId, answererId, lastReplyOn, title, views, subscribers, question, hasCode,
-                         createdOn, answeredOn, replies, contributors, authorId, answererId, lastReplyOn)
-        self.connection.commit()
+            for conKey in thr.contributors.keys():
+                con = thr.contributors[conKey]
+                cursor = self.connection.cursor()
+                cursor.execute("""
+                    MERGE
+                        [Forums].[dbo].[Contributors] AS target
+                        USING (select ?,?) AS source ([User_ID],[Thread_ID])
+                        ON (target.[User_ID] = source.[User_ID] AND target.[Thread_ID] = source.[Thread_ID])
+                    WHEN NOT MATCHED THEN
+                        INSERT
+                            ([User_ID]
+                            ,[Thread_ID]
+                            ,[First_Posts]
+                            ,[Posts]
+                            ,[Answers]
+                            ,[Votes]
+                            ,[Code_Posts])
+                        VALUES
+                            (?,?,?,?,?,?,?)
+                    WHEN MATCHED THEN
+                        UPDATE SET
+                            [First_Posts] = ?
+                            ,[Posts] = ?
+                            ,[Answers] = ?
+                            ,[Votes] = ?
+                            ,[Code_Posts] = ?
+                    ;
+                """, con.userId, thr.id, con.userId, thr.id, con.firstPosts, con.posts, con.answers,
+                               con.votes, con.code,  con.firstPosts, con.posts, con.answers,
+                               con.votes, con.code)
+                self.connection.commit()
+
+    def addUsers (self, users):
+        for userId in users.keys():
+            u = users[userId]
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                MERGE
+                    [Forums].[dbo].[Users] AS target
+                    USING (select ?) AS source ([ID])
+                    ON (target.[ID] = source.[ID])
+                WHEN NOT MATCHED THEN
+                    INSERT
+                       ([ID]
+                          ,[Display_Name]
+                          ,[MSFT]
+                          ,[MSCS]
+                          ,[MVP]
+                          ,[Partner]
+                          ,[MCC]
+                          ,[LastActive]
+                          ,[Points]
+                          ,[Posts]
+                          ,[Answers]
+                          ,[Stars]
+                          ,[Role])
+                    VALUES
+                       (?,?,?,?,?,?,?,?,?,?,?,?,?);
+                """,  userId, userId, u.displayName, u.msft, u.mscs, u.mvp, u.partner, u.mcc,
+                           u.lastActive, u.points, u.posts, u.answers, u.stars, u.role)
+            self.connection.commit()
+
+
 
 

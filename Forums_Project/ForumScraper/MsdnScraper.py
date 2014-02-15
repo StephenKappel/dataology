@@ -6,10 +6,8 @@ import urllib.parse
 import json
 from DAL import DAL
 import parsedatetime
-import datetime
 from Thread import Thread
 from User import User
-from  Contributor import Contributor
 import iso8601
 
 class MsdnScraper():
@@ -76,101 +74,115 @@ class MsdnScraper():
 
     def scrapeThreadDetail(self):
 
-        i = 1
         cal = parsedatetime.Calendar()
-
-        myThreads = list()
-        myUsers = dict()
 
         threads = self.myDal.getThreadsList()
 
-        for threadId in threads:
+        while len(threads) > 0:
 
-            i += 1
-            if (i > 10):
-                break
+            myThreads = list()
+            myUsers = dict()
 
-            url = self.THREAD_URL_STUB.replace("###", threadId)
-            print (url)
-            soup = BeautifulSoup(urllib.request.urlopen(url))
+            for threadId in threads:
 
-            t = soup.find("thread")
+                url = self.THREAD_URL_STUB.replace("###", threadId)
+                print (url)
+                soup = BeautifulSoup(urllib.request.urlopen(url))
 
-            tt = t.get("threadtype")
-            if tt == "question" or tt == "answer" or tt == "propose":
+                t = soup.find("thread")
 
+                tt = t.get("threadtype")
                 messages = soup.find("messages")
                 firstMess = messages.find("message")
-                myThread = Thread(t.get("id"), t.find("topic").text, firstMess.find("body").text, t.get("views"),
-                                  t.get("subscribers"), self.makeDateTime(cal.parseDateTime(t.find("createdon").text)), firstMess.get("hascode") == "true")
 
-                myThread.getContributor(t.get("authorid")).addFirstPost()
+                if tt == "question" or tt == "answer" or tt == "propose":
 
-                # update list of users
-                for user in soup.find("users").findAll("user"):
-                    userId = user.get("id")
-                    if not userId in myUsers:
-                        myUsers[userId] = User(userId, user.find("displayname").text, user.find("msft").text == "true"
-                            , user.find("mscs").text == "true", user.find("mvp").text == "true"
-                            , user.find("partner").text == "true", user.find("mcc").text == "true"
-                            , self.makeDateTime(cal.parseDateTime(user.find("lastactive").text))
-                            , int(user.find("points").text), int(user.find("posts").text)
-                            , int(user.find("answers").text), int(user.find("stars").text))
-                            #, user.find("role").text)
+                    myThread = Thread(t.get("id"), t.find("topic").text, clean_html_markup(firstMess.find("body").text), t.get("views"),
+                                      t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true")
 
-                # iterate through each message to get data not explicitly called out in attributes
-                for message in messages.findAll("message"):
+                    myThread.getContributor(t.get("authorid")).addFirstPost()
 
-                    #print (message)
+                    # update list of users
+                    for user in soup.find("users").findAll("user"):
+                        userId = user.get("id")
+                        if not userId in myUsers:
+                            role = user.find("role")
+                            if role is None:
+                                role = ""
+                            else:
+                                role = role.text
+                            myUsers[userId] = User(userId, user.find("displayname").text, user.find("msft").text == "true"
+                                , user.find("mscs").text == "true", user.find("mvp").text == "true"
+                                , user.find("partner").text == "true", user.find("mcc").text == "true"
+                                , iso8601.parse_date(user.find("lastactive").text)
+                                , int(user.find("points").text), int(user.find("posts").text)
+                                , int(user.find("answers").text), int(user.find("stars").text)
+                                , role)
 
-                    # keep track of newest post
-                    myThread.setLastPostOn(self.makeDateTime(cal.parseDateTime(message.find("createdon").text)))
+                    # iterate through each message to get data not explicitly called out in attributes
+                    for message in messages.findAll("message"):
 
-                    # update contributor stats
-                    con = myThread.getContributor(message.get("authorid"))
-                    con.addPost()
-                    if message.get("hasCode") == "true":
-                        con.addCode()
-                    con.addVotes(int(message.get("helpfulvotes")))
+                        # keep track of newest post
+                        myThread.setLastPostOn(iso8601.parse_date(message.find("createdon").text))
 
-                    # if this is marked as an answer
-                    ans = message.find("answer")
-                    if (not ans is None) and ans.text == "true":
+                        # update contributor stats
+                        con = myThread.getContributor(message.get("authorid"))
+                        con.addPost()
+                        if message.get("hasCode") == "true":
+                            con.addCode()
+                        con.addVotes(int(message.get("helpfulvotes")))
 
-                        # give contributor credit
-                        con.addAnswer()
+                        # if this is marked as an answer
+                        ans = message.find("answer")
+                        if (not ans is None) and ans.text == "true":
 
-                        # track if any answer contains code
-                        if (message.get("hascode") == "true"):
-                            myThread.setAnswerHasCode()
+                            # give contributor credit
+                            con.addAnswer()
 
-                        # find when this was marked as an answer
-                        hists = message.findAll("history")
-                        for hist in hists:
-                            if hist.find("type").text == "MarkAnswer":
-                                myThread.setAnsweredOn(self.makeDateTime(cal.parseDateTime(hist.find("date").text)))
-                                break
+                            # track if any answer contains code
+                            if (message.get("hascode") == "true"):
+                                myThread.setAnswerHasCode()
 
-                myThreads.append(myThread)
+                            # find when this was marked as an answer
+                            hists = message.findAll("history")
+                            for hist in hists:
+                                if hist.find("type").text == "MarkAnswer":
+                                    myThread.setAnsweredOn(iso8601.parse_date(hist.find("date").text))
+                                    break
 
-            else:
-                print ("Thread of type " + t.get("threadtype") + " ignored. " + t.get("id"))
+                    myThreads.append(myThread)
 
-        # submit users to the database
-        self.myDal.addUsers(myUsers)
+                else:
+                    myThreads.append(Thread(t.get("id"), "![["+ t.get("threadtype") + "]]! "+t.find("topic").text, clean_html_markup(firstMess.find("body").text), t.get("views"),
+                                      t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true"))
 
-        # submit threads to the database
-        self.myDal.addThreadDetails(myThreads)
+            # submit users to the database
+            self.myDal.addUsers(myUsers)
 
-    def makeDateTime(self, input):
-        input = input[0]
-        print (input, " ", input[0])
-        return datetime.datetime(input[0], input[1], input[2], input[3], input[4],input[5])
+            # submit threads to the database
+            self.myDal.addThreadDetails(myThreads)
 
-#myScraper = MsdnScraper()
+            threads = self.myDal.getThreadsList()
+
+def clean_html_markup(s):
+    tag = False
+    quote = False
+    out = ""
+
+    for c in s:
+            if c == '<' and not quote:
+                tag = True
+            elif c == '>' and not quote:
+                tag = False
+            elif (c == '"' or c == "'") and tag:
+                quote = not quote
+            elif not tag:
+                out = out + c
+
+    return out.replace("&gt;",">").replace("&lt;", "<").replace("&apos;","'").replace("&quot;", "\"").replace("&nbsp;"," ").replace("&amp;", "&")
+
+myScraper = MsdnScraper()
 #myScraper.scrapeForumsList()
-#myScraper.scrapeThreadsList()
-#myScraper.scrapeThreadDetail()
-
-
+myScraper.scrapeThreadsList()
+myScraper.scrapeThreadDetail()
 
