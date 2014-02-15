@@ -26,7 +26,7 @@
       <file leaf-file-name="MsdnScraper.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="202" column="29" selection-start="7973" selection-end="7973" vertical-scroll-proportion="0.7701613" vertical-offset="3052" max-vertical-offset="3604">
+            <state line="62" column="33" selection-start="2514" selection-end="2514" vertical-scroll-proportion="-0.22782259" vertical-offset="1167" max-vertical-offset="3689">
               <folding>
                 <element signature="e#24#53#0" expanded="true" />
               </folding>
@@ -46,7 +46,7 @@
       <file leaf-file-name="DAL.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DAL.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="41" selection-start="2364" selection-end="2364" vertical-scroll-proportion="0.0" vertical-offset="850" max-vertical-offset="3264">
+            <state line="179" column="93" selection-start="7114" selection-end="7114" vertical-scroll-proportion="0.0" vertical-offset="2768" max-vertical-offset="3400">
               <folding />
             </state>
           </provider>
@@ -337,8 +337,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1616" height="880" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1616" height="880" extended-state="6" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -348,7 +348,7 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39814815" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32470894" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32470894" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -583,14 +583,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DAL.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="41" selection-start="2364" selection-end="2364" vertical-scroll-proportion="0.0" vertical-offset="850" max-vertical-offset="3264">
+        <state line="179" column="93" selection-start="7114" selection-end="7114" vertical-scroll-proportion="0.0" vertical-offset="2768" max-vertical-offset="3400">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="202" column="29" selection-start="7973" selection-end="7973" vertical-scroll-proportion="0.7701613" vertical-offset="3052" max-vertical-offset="3604">
+        <state line="62" column="33" selection-start="2514" selection-end="2514" vertical-scroll-proportion="-0.22782259" vertical-offset="1167" max-vertical-offset="3689">
           <folding>
             <element signature="e#24#53#0" expanded="true" />
           </folding>

@@ -137,7 +137,7 @@ class DAL:
                             ,[Votes]
                             ,[Code_Posts])
                         VALUES
-                            (?,?,?,?,?,?,?)
+                           (?,?,?,?,?,?,?)
                     WHEN MATCHED THEN
                         UPDATE SET
                             [First_Posts] = ?
@@ -180,6 +180,14 @@ class DAL:
                 """,  userId, userId, u.displayName, u.msft, u.mscs, u.mvp, u.partner, u.mcc,
                            u.lastActive, u.points, u.posts, u.answers, u.stars, u.role)
             self.connection.commit()
+
+    def deleteThread(self, threadId):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            DELETE FROM [Forums].[dbo].[Threads] WHERE ID = ?
+            """,  threadId)
+        self.connection.commit()
+
 
 
 

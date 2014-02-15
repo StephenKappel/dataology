@@ -87,7 +87,12 @@ class MsdnScraper():
 
                 url = self.THREAD_URL_STUB.replace("###", threadId)
                 print (url)
-                soup = BeautifulSoup(urllib.request.urlopen(url))
+                try:
+                    soup = BeautifulSoup(urllib.request.urlopen(url))
+                except urllib.error.HTTPError:
+                    # this occurs in the case that a thread has been deleted since the time when the thread id was scraped
+                    self.myDal.deleteThread(threadId)
+                    continue
 
                 t = soup.find("thread")
 
