@@ -5,7 +5,7 @@ from datetime import datetime, tzinfo, timedelta
 
 class Thread:
 
-    def __init__(self, id, title, question, views, subscribers, createdOn, firstPostHasCode):
+    def __init__(self, id, title, question, views, subscribers, createdOn, firstPostHasCode, type):
         self.id = id
         self.contributors = dict()
         self.title = title
@@ -17,6 +17,7 @@ class Thread:
         self.answeredOn = datetime(3000, 1, 1, 0, 0, 0, tzinfo = GMT())
         self.lastPostOn = datetime(1900, 1, 1, 0, 0, 0, tzinfo = GMT())
         self.answerHasCode = False
+        self.type = type
 
     def getContributor(self, userId):
         if(not userId in self.contributors):

@@ -62,7 +62,7 @@ class DAL:
                 ,f.[Name]
             FROM [Forums].[dbo].[Forums] f
             LEFT OUTER JOIN [Forums].[dbo].[Threads] t ON f.ID = t.Forum_ID
-            WHERE ((f.[Name] LIKE 'sql%' or f.[Name] LIKE 'sharepoint%') AND t.ID IS NULL) or f.[Name] = 'sharepointgeneralprevious'
+            WHERE f.[Name] LIKE 'sql%' or f.[Name] LIKE 'sharepoint%'
             """)
         rows = cursor.fetchall()
         forums = dict()
@@ -89,7 +89,7 @@ class DAL:
     def getThreadsList (self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT TOP 1000 [ID]
+            SELECT TOP 100 [ID]
             FROM [Forums].[dbo].[Threads]
             WHERE Title IS NULL
             """)
@@ -113,9 +113,10 @@ class DAL:
                       ,[Last_Post_On] = ?
                       ,[Answer_Has_Code] = ?
                       ,[First_Post_Has_Code] = ?
+                      ,[Type] = ?
                     WHERE [ID] = ?
             """, thr.title, thr.question, thr.views, thr.subscribers, thr.createdOn, thr.answeredOn,
-                           thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.id)
+                           thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.type, thr.id)
             self.connection.commit()
 
             for conKey in thr.contributors.keys():

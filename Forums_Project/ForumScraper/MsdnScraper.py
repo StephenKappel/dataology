@@ -91,70 +91,87 @@ class MsdnScraper():
 
                 t = soup.find("thread")
 
-                tt = t.get("threadtype")
                 messages = soup.find("messages")
                 firstMess = messages.find("message")
 
-                if tt == "question" or tt == "answer" or tt == "propose":
+                myThread = Thread(t.get("id"), t.find("topic").text, clean_html_markup(firstMess.find("body").text), t.get("views"),
+                                  t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true", t.get("threadtype"))
 
-                    myThread = Thread(t.get("id"), t.find("topic").text, clean_html_markup(firstMess.find("body").text), t.get("views"),
-                                      t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true")
+                myThread.getContributor(t.get("authorid")).addFirstPost()
 
-                    myThread.getContributor(t.get("authorid")).addFirstPost()
+                # update list of users
+                for user in soup.find("users").findAll("user"):
+                    userId = user.get("id")
+                    if not userId in myUsers:
+                        role = user.find("role")
+                        if role is None:
+                            role = ""
+                        else:
+                            role = role.text
 
-                    # update list of users
-                    for user in soup.find("users").findAll("user"):
-                        userId = user.get("id")
-                        if not userId in myUsers:
-                            role = user.find("role")
-                            if role is None:
-                                role = ""
-                            else:
-                                role = role.text
-                            myUsers[userId] = User(userId, user.find("displayname").text, user.find("msft").text == "true"
-                                , user.find("mscs").text == "true", user.find("mvp").text == "true"
-                                , user.find("partner").text == "true", user.find("mcc").text == "true"
-                                , iso8601.parse_date(user.find("lastactive").text)
-                                , int(user.find("points").text), int(user.find("posts").text)
-                                , int(user.find("answers").text), int(user.find("stars").text)
-                                , role)
+                        points = user.find("points")
+                        if points is None:
+                            points = 0
+                        else:
+                            points = int(points.text)
 
-                    # iterate through each message to get data not explicitly called out in attributes
-                    for message in messages.findAll("message"):
+                        posts = user.find("posts")
+                        if posts is None:
+                            posts = 0
+                        else:
+                            posts = int(posts.text)
 
-                        # keep track of newest post
-                        myThread.setLastPostOn(iso8601.parse_date(message.find("createdon").text))
+                        answers = user.find("answers")
+                        if answers is None:
+                            answers = 0
+                        else:
+                            answers = int(answers.text)
 
-                        # update contributor stats
-                        con = myThread.getContributor(message.get("authorid"))
-                        con.addPost()
-                        if message.get("hasCode") == "true":
-                            con.addCode()
-                        con.addVotes(int(message.get("helpfulvotes")))
+                        stars = user.find("stars")
+                        if stars is None:
+                            stars = 0
+                        else:
+                            stars = int(stars.text)
 
-                        # if this is marked as an answer
-                        ans = message.find("answer")
-                        if (not ans is None) and ans.text == "true":
+                        myUsers[userId] = User(userId, user.find("displayname").text, user.find("msft").text == "true"
+                            , user.find("mscs").text == "true", user.find("mvp").text == "true"
+                            , user.find("partner").text == "true", user.find("mcc").text == "true"
+                            , iso8601.parse_date(user.find("lastactive").text)
+                            , points, posts, answers, stars, role)
 
-                            # give contributor credit
-                            con.addAnswer()
+                # iterate through each message to get data not explicitly called out in attributes
+                for message in messages.findAll("message"):
 
-                            # track if any answer contains code
-                            if (message.get("hascode") == "true"):
-                                myThread.setAnswerHasCode()
+                    # keep track of newest post
+                    myThread.setLastPostOn(iso8601.parse_date(message.find("createdon").text))
 
-                            # find when this was marked as an answer
-                            hists = message.findAll("history")
-                            for hist in hists:
-                                if hist.find("type").text == "MarkAnswer":
-                                    myThread.setAnsweredOn(iso8601.parse_date(hist.find("date").text))
-                                    break
+                    # update contributor stats
+                    con = myThread.getContributor(message.get("authorid"))
+                    con.addPost()
+                    if message.get("hascode") == "true":
+                        con.addCode()
+                    con.addVotes(int(message.get("helpfulvotes")))
 
-                    myThreads.append(myThread)
+                    # if this is marked as an answer
+                    ans = message.find("answer")
+                    if (not ans is None) and ans.text == "true":
 
-                else:
-                    myThreads.append(Thread(t.get("id"), "![["+ t.get("threadtype") + "]]! "+t.find("topic").text, clean_html_markup(firstMess.find("body").text), t.get("views"),
-                                      t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true"))
+                        # give contributor credit
+                        con.addAnswer()
+
+                        # track if any answer contains code
+                        if (message.get("hascode") == "true"):
+                            myThread.setAnswerHasCode()
+
+                        # find when this was marked as an answer
+                        hists = message.findAll("history")
+                        for hist in hists:
+                            if hist.find("type").text == "MarkAnswer":
+                                myThread.setAnsweredOn(iso8601.parse_date(hist.find("date").text))
+                                break
+
+                myThreads.append(myThread)
+
 
             # submit users to the database
             self.myDal.addUsers(myUsers)
@@ -179,10 +196,11 @@ def clean_html_markup(s):
             elif not tag:
                 out = out + c
 
-    return out.replace("&gt;",">").replace("&lt;", "<").replace("&apos;","'").replace("&quot;", "\"").replace("&nbsp;"," ").replace("&amp;", "&")
+    return out.replace("&gt;",">").replace("&lt;", "<").replace("&apos;","'").replace("&quot;", "\"")\
+        .replace("&nbsp;"," ").replace("&amp;", "&").strip()
 
 myScraper = MsdnScraper()
 #myScraper.scrapeForumsList()
-myScraper.scrapeThreadsList()
+#myScraper.scrapeThreadsList()
 myScraper.scrapeThreadDetail()
 
