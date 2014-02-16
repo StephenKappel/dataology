@@ -5,6 +5,15 @@ import pyodbc
 class DAL:
 
     CONNECTION_STRING = "DSN=DataHogDB"
+    FORUMS_LIST = "('sqlexpress','sqldataaccess','sharepointdevelopmentprevious','sharepointadminprevious','sharepointdevelopment'," \
+                  "'sqlce','sharepointdevelopmentlegacy','sharepointgeneralprevious','sqlsmoanddmo','sharepointcustomizationprevious'," \
+                  "'sqlreplication','sharepointgeneral','sqlservicebroker','sharepointadmin','sqlintegrationservices'," \
+                  "'sqlreportingservices','sqlxml','sqlgetstarted','sqlsetupandupgrade','sqldisasterrecovery','sqldatawarehousing'," \
+                  "'sqlkjpowerpointforsharepoint','sqldatamining','sqlmds','sqldatabaseengine','sqlspatial','sqlnotificationservices'," \
+                  "'sqlsearch','sqldriverforphp','sharepointsearchlegacy','sharepointcustomization','sharepointsearch'," \
+                  "'sqlkjpowerpivotforexcel','sqlnetfx','sqlsecurity','sharepointgenerallegacy','sqlanalysisservices'," \
+                  "'sqldocumentation','sqldatabasemirroring','sqlkjmanageability','sharepointadminlegacy','sharepointcustomizationlegacy'," \
+                  "'sqlservermigration','sharepointsearchprevious','sqlserversamples','sqlkjappmsmgmt','sqltools','sqldataqualityservices','sqlazurelabssupport')"
 
     def __init__(self):
         self.connection = pyodbc.connect(self.CONNECTION_STRING)
@@ -61,9 +70,7 @@ class DAL:
             SELECT distinct f.[ID]
                 ,f.[Name]
             FROM [Forums].[dbo].[Forums] f
-            LEFT OUTER JOIN [Forums].[dbo].[Threads] t ON f.ID = t.Forum_ID
-            WHERE f.[Name] LIKE 'sql%' or f.[Name] LIKE 'sharepoint%'
-            """)
+            WHERE f.[Name] IN """ + self.FORUMS_LIST)
         rows = cursor.fetchall()
         forums = dict()
         for row in rows:
@@ -89,9 +96,9 @@ class DAL:
     def getThreadsList (self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT TOP 100 [ID]
+            SELECT TOP 10 [ID]
             FROM [Forums].[dbo].[Threads]
-            WHERE Title IS NULL
+            WHERE Scraped_On IS NULL
             """)
         rows = cursor.fetchall()
         threads = list()
@@ -118,7 +125,7 @@ class DAL:
                       ,[First_Reply_On] = ?
                     WHERE [ID] = ?
             """, thr.title, thr.question, thr.views, thr.subscribers, thr.createdOn, thr.answeredOn,
-                           thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.type, thr.id)
+                           thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.type, thr.scrapedOn, thr.firstReplyOn, thr.id)
             self.connection.commit()
 
             for conKey in thr.contributors.keys():

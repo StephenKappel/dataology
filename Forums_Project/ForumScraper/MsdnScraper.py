@@ -124,7 +124,7 @@ class MsdnScraper():
 
                 # make request for xml
                 try:
-                    scrapeTime = datetime.now()
+                    scrapeTime = datetime.datetime.now()
                     soup = BeautifulSoup(urllib.request.urlopen(url))
                 except urllib.error.HTTPError:
                     # this occurs in the case that a thread has been deleted since the time when the thread id was scraped
@@ -220,7 +220,7 @@ class MsdnScraper():
             # submit threads to the database
             self.myDal.addThreadDetails(myThreads)
 
-            threads = self.myDal.getThreadsList()
+            threads = list() # self.myDal.getThreadsList()
 
 # a function for removing ugly markup from message text
 def clean_html_markup(s):
@@ -244,5 +244,5 @@ def clean_html_markup(s):
 myScraper = MsdnScraper()
 #myScraper.scrapeForumsList()
 #myScraper.scrapeThreadsList()
-myScraper.scrapeThreadDetail()
+#myScraper.scrapeThreadDetail()
 
