@@ -114,6 +114,8 @@ class DAL:
                       ,[Answer_Has_Code] = ?
                       ,[First_Post_Has_Code] = ?
                       ,[Type] = ?
+                      ,[Scraped_On] = ?
+                      ,[First_Reply_On] = ?
                     WHERE [ID] = ?
             """, thr.title, thr.question, thr.views, thr.subscribers, thr.createdOn, thr.answeredOn,
                            thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.type, thr.id)

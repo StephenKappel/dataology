@@ -2,6 +2,7 @@ __author__ = 'Stephen'
 
 class User:
 
+    # constructor
     def __init__(self, userId, displayName, msft, mscs, mvp, partner, mcc, lastActive,
         points, posts, answers, stars, role):
         self.userId = userId

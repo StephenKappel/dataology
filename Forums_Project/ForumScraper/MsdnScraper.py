@@ -181,8 +181,8 @@ class MsdnScraper():
                 # iterate through each message to get data not explicitly called out in attributes
                 for message in messages.findAll("message"):
 
-                    # keep track of newest post
-                    myThread.setLastPostOn(iso8601.parse_date(message.find("createdon").text))
+                    # keep track of newest post and first reply dates
+                    myThread.addPostDate(iso8601.parse_date(message.find("createdon").text))
 
                     # update contributor stats
                     con = myThread.getContributor(message.get("authorid"))
@@ -210,7 +210,6 @@ class MsdnScraper():
                                 break
 
                 myThreads.append(myThread)
-
 
             # submit users to the database
             self.myDal.addUsers(myUsers)
