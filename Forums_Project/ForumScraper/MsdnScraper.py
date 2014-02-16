@@ -1,28 +1,41 @@
 __author__ = 'Stephen'
 
+# import libraries for making web requests and parsing responses
 from bs4 import BeautifulSoup
 import urllib.request
 import urllib.parse
 import json
-from DAL import DAL
+import iso8601
 import parsedatetime
+
+# import my own modules
+from DAL import DAL
 from Thread import Thread
 from User import User
-import iso8601
 
+# a class for gathering a data about categories, forums, threads, contributors, and users from MSDN
 class MsdnScraper():
 
     # the contents of this html file were attained by going to http://social.msdn.microsoft.com/Forums/en-US/home
     # selecting the [ View All ] link, inspecting the element of the dialog box, and saving the exposed DOM
     FORUM_CATALOG_PATH = "C:\\Users\\Stephen\\Documents\\GitHub\\dataology\\Forums_Project\\ForumScraper\\Sample_Markup\\MsdnForumsCatalog.html"
+
+    # api url to get list of all forums in the category
     FORUM_DETAILS_API_STUB = "http://social.msdn.microsoft.com/Forums/api/category/getforumdetails?category="
+
+    # page that lists all threads in a given forum
     THREAD_LIST_URL_STUB = "http://social.msdn.microsoft.com/Forums/en-US/home?filter=alltypes&sort=firstpostdesc"
+
+    # url for getting xml document with a single thread's details
     THREAD_URL_STUB = "http://social.msdn.microsoft.com/Forums/en-US/###?outputAs=xml"
 
-
+    # constructor
+    # creates an instance of the data access layer module
     def __init__(self):
         self.myDal = DAL()
 
+    # from html page saved locally, get a list of all the categories,
+    # and use these categories to get forums from api
     def scrapeForumsList(self):
 
         count = 0
@@ -32,6 +45,7 @@ class MsdnScraper():
         container = soup.find(id="allCategoryListContainer")
         categories = container.find_all(class_="categoryArea")
 
+        # iterate through the categories to make one api call per category
         for cat in categories:
 
             #save category information to categories table in database
@@ -54,39 +68,60 @@ class MsdnScraper():
 
         print (count, " forums added or updated, in total")
 
+    # apply forums filter to msdn's forums page to get the threads belonging to each forum
     def scrapeThreadsList(self):
 
+        # get forums from the database
         forums = self.myDal.getForumsList()
+
+        # forum by forum...
         for forumKey in forums.keys():
             print("getting threads for " + forumKey)
             forumId = forums[forumKey]
+
+            # get the first 25 pages of threads listed
             for i in range(1,26):
                 gotSome = False
+
+                # use beautiful soup to parse thread id from the html
                 url = self.THREAD_LIST_URL_STUB + "&forum=" + forumKey + "&page=" + str(i)
                 soup = BeautifulSoup(urllib.request.urlopen(url))
                 threads = soup.find_all(class_="threadblock")
                 for thread in threads:
                     gotSome = True
                     id = thread.get("data-threadid")
+                    #add thread id to database
                     self.myDal.addThread(id, forumId)
+
+                # stop if there are not more threads to scrape (because we are at end of list or this is
+                # a foreign language forum
                 if gotSome == False:
                     break
 
+    # get the thread details by asking msdn for an xml representation for each thread
     def scrapeThreadDetail(self):
 
+        # initialize calendar for parsing dates
         cal = parsedatetime.Calendar()
 
+        # get thread ids from the database; only gets a batch (not all from database)
         threads = self.myDal.getThreadsList()
 
+        # until we have gotten details for all threads in the database
         while len(threads) > 0:
 
+            # create data structures for temporary data storage
             myThreads = list()
             myUsers = dict()
 
+            # for each thread in  this batch retrieved from the database
             for threadId in threads:
 
+                # create request url by using the threadId
                 url = self.THREAD_URL_STUB.replace("###", threadId)
                 print (url)
+
+                # make request for xml
                 try:
                     soup = BeautifulSoup(urllib.request.urlopen(url))
                 except urllib.error.HTTPError:
@@ -94,11 +129,10 @@ class MsdnScraper():
                     self.myDal.deleteThread(threadId)
                     continue
 
+                # parse the top-level thread attributes
                 t = soup.find("thread")
-
                 messages = soup.find("messages")
                 firstMess = messages.find("message")
-
                 myThread = Thread(t.get("id"), t.find("topic").text, clean_html_markup(firstMess.find("body").text), t.get("views"),
                                   t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true", t.get("threadtype"))
 
@@ -186,6 +220,7 @@ class MsdnScraper():
 
             threads = self.myDal.getThreadsList()
 
+# a function for removing ugly markup from message text
 def clean_html_markup(s):
     tag = False
     quote = False
