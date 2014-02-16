@@ -6,7 +6,7 @@ from datetime import datetime, tzinfo, timedelta
 class Thread:
 
     # constructor
-    def __init__(self, id, title, question, views, subscribers, createdOn, firstPostHasCode, type):
+    def __init__(self, id, title, question, views, subscribers, createdOn, firstPostHasCode, type, scrapedOn):
         self.id = id
         self.contributors = dict()
         self.title = title
@@ -19,7 +19,7 @@ class Thread:
         self.lastPostOn = datetime(1900, 1, 1, 0, 0, 0, tzinfo=GMT())
         self.answerHasCode = False
         self.type = type
-        self.scrapedOn = datetime.now(GMT())
+        self.scrapedOn = scrapedOn
         self.firstReplyOn = datetime(3000, 1, 1, 0, 0, 0, tzinfo=GMT())
 
     #  returns a contributor object with the given userId

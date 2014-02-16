@@ -7,6 +7,7 @@ import urllib.parse
 import json
 import iso8601
 import parsedatetime
+import datetime
 
 # import my own modules
 from DAL import DAL
@@ -123,6 +124,7 @@ class MsdnScraper():
 
                 # make request for xml
                 try:
+                    scrapeTime = datetime.now()
                     soup = BeautifulSoup(urllib.request.urlopen(url))
                 except urllib.error.HTTPError:
                     # this occurs in the case that a thread has been deleted since the time when the thread id was scraped
@@ -134,7 +136,8 @@ class MsdnScraper():
                 messages = soup.find("messages")
                 firstMess = messages.find("message")
                 myThread = Thread(t.get("id"), t.find("topic").text, clean_html_markup(firstMess.find("body").text), t.get("views"),
-                                  t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true", t.get("threadtype"))
+                                  t.get("subscribers"), iso8601.parse_date(t.find("createdon").text), firstMess.get("hascode") == "true",
+                                  t.get("threadtype"), scrapeTime)
 
                 myThread.getContributor(t.get("authorid")).addFirstPost()
 
