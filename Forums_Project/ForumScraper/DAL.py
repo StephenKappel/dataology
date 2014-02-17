@@ -106,11 +106,34 @@ class DAL:
             threads.append(row.ID)
         return threads
 
-    def addThreadDetails(self, threads):
+    def addThreads(self, threads, forumId):
         for thr in threads:
             cursor = self.connection.cursor()
             cursor.execute("""
-                UPDATE [Forums].[dbo].[Threads] SET
+            MERGE
+	            [Forums].[dbo].[Threads] AS target
+                USING (select ?,?) AS source ([Forum_ID],[ID])
+                ON (target.[ID] = source.[ID])
+	        WHEN NOT MATCHED THEN
+	            INSERT
+                   ([Forum_ID]
+                   ,[ID]
+                   ,[Title]
+                   ,[Question]
+                   ,[Views]
+                   ,[Subscribers]
+                   ,[Created_On]
+                   ,[Answered_On]
+                   ,[Last_Post_On]
+                   ,[Answer_Has_Code]
+                   ,[First_Post_Has_Code]
+                   ,[Type]
+                   ,[Scraped_On]
+                   ,[First_Reply_On])
+                VALUES
+                   (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            WHEN MATCHED THEN
+                UPDATE SET
                       [Title] = ?
                       ,[Question] = ?
                       ,[Views] = ?
@@ -123,9 +146,11 @@ class DAL:
                       ,[Type] = ?
                       ,[Scraped_On] = ?
                       ,[First_Reply_On] = ?
-                    WHERE [ID] = ?
-            """, thr.title, thr.question, thr.views, thr.subscribers, thr.createdOn, thr.answeredOn,
-                           thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.type, thr.scrapedOn, thr.firstReplyOn, thr.id)
+            ;
+            """, forumId, thr.id, forumId, thr.id, thr.title, thr.question, thr.views, thr.subscribers, thr.createdOn,
+                thr.answeredOn, thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.type, thr.scrapedOn,
+                thr.firstReplyOn, thr.title, thr.question, thr.views, thr.subscribers, thr.createdOn, thr.answeredOn,
+                thr.lastPostOn, thr.answerHasCode, thr.firstPostHasCode, thr.type, thr.scrapedOn, thr.firstReplyOn)
             self.connection.commit()
 
             for conKey in thr.contributors.keys():
