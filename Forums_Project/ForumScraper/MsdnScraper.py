@@ -219,8 +219,6 @@ class MsdnScraper():
             # for threads (including contributors)
             self.myDal.addThreads(myThreads,forumId)
 
-            break
-
 # a function for removing ugly markup from message text
 def clean_html_markup(s):
     tag = False
