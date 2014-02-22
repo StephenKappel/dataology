@@ -26,10 +26,8 @@
       <file leaf-file-name="MsdnScraper.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="219" column="52" selection-start="9900" selection-end="9900" vertical-scroll-proportion="8.366292" vertical-offset="0" max-vertical-offset="4284">
-              <folding>
-                <element signature="e#89#118#0" expanded="true" />
-              </folding>
+            <state line="229" column="40" selection-start="10511" selection-end="10511" vertical-scroll-proportion="0.43173432" vertical-offset="3557" max-vertical-offset="4454">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -37,7 +35,7 @@
       <file leaf-file-name="Contributor.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Contributor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="27" selection-start="438" selection-end="438" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
+            <state line="22" column="27" selection-start="438" selection-end="438" vertical-scroll-proportion="0.0" vertical-offset="2" max-vertical-offset="544">
               <folding />
             </state>
           </provider>
@@ -46,7 +44,7 @@
       <file leaf-file-name="DAL.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DAL.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="135" selection-start="233" selection-end="233" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3978">
+            <state line="14" column="74" selection-start="1218" selection-end="1218" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3961">
               <folding />
             </state>
           </provider>
@@ -55,12 +53,8 @@
       <file leaf-file-name="Thread.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Thread.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="8" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="986">
-              <folding>
-                <marker date="1392597601469" expanded="true" signature="273:846" placeholder="..." />
-                <marker date="1392597601469" expanded="true" signature="1340:1424" placeholder="..." />
-                <marker date="1392597601469" expanded="true" signature="1611:1805" placeholder="..." />
-              </folding>
+            <state line="3" column="8" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0" vertical-offset="36" max-vertical-offset="986">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -68,7 +62,7 @@
       <file leaf-file-name="GMT.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/GMT.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="48" selection-start="72" selection-end="72" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="272">
+            <state line="2" column="48" selection-start="72" selection-end="72" vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="272">
               <folding />
             </state>
           </provider>
@@ -77,7 +71,7 @@
       <file leaf-file-name="User.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/User.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="17" selection-start="54" selection-end="54" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
+            <state line="4" column="17" selection-start="54" selection-end="54" vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="425">
               <folding />
             </state>
           </provider>
@@ -352,17 +346,17 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="880" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.105" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39814815" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39715394" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.39068565" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26520053" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -411,10 +405,92 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state line="108" column="22" selection-start="4365" selection-end="4365" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4692">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Contributor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="27" selection-start="438" selection-end="438" vertical-scroll-proportion="0.0" vertical-offset="374" max-vertical-offset="544">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DAL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="30" selection-end="30" vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="3995">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Thread.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="8" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="986">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GMT.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="48" selection-start="72" selection-end="72" vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="272">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/User.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="17" selection-start="54" selection-end="54" vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="425">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="262" column="0" selection-start="11527" selection-end="11527" vertical-scroll-proportion="0.0" vertical-offset="4111" max-vertical-offset="4556">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Contributor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="27" selection-start="438" selection-end="438" vertical-scroll-proportion="0.0" vertical-offset="374" max-vertical-offset="544">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DAL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="126" selection-start="1047" selection-end="1047" vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="3978">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Thread.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="8" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="986">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GMT.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="48" selection-start="72" selection-end="72" vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="272">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/User.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="17" selection-start="54" selection-end="54" vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="425">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state line="222" column="55" selection-start="9424" selection-end="9424" vertical-scroll-proportion="0.0" vertical-offset="3643" max-vertical-offset="4284">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -435,11 +511,7 @@
     <entry file="file://$PROJECT_DIR$/Thread.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="97" selection-start="222" selection-end="222" vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="901">
-          <folding>
-            <marker date="1392597601469" expanded="true" signature="273:846" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1340:1424" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1611:1805" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -453,9 +525,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="62" column="33" selection-start="2514" selection-end="2514" vertical-scroll-proportion="0.0" vertical-offset="1167" max-vertical-offset="3689">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -476,11 +546,7 @@
     <entry file="file://$PROJECT_DIR$/Thread.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="97" selection-start="222" selection-end="222" vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="901">
-          <folding>
-            <marker date="1392597601469" expanded="true" signature="273:846" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1340:1424" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1611:1805" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -494,9 +560,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="193" column="34" selection-start="7547" selection-end="7547" vertical-scroll-proportion="0.0" vertical-offset="3281" max-vertical-offset="3417">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -517,11 +581,7 @@
     <entry file="file://$PROJECT_DIR$/Thread.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="20" selection-start="239" selection-end="239" vertical-scroll-proportion="0.0" vertical-offset="136" max-vertical-offset="884">
-          <folding>
-            <marker date="1392597601469" expanded="true" signature="273:846" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1340:1424" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1611:1805" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -535,9 +595,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="174" column="0" selection-start="7085" selection-end="7085" vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="3094">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -558,11 +616,7 @@
     <entry file="file://$PROJECT_DIR$/Thread.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="23" column="40" selection-start="780" selection-end="780" vertical-scroll-proportion="0.0" vertical-offset="130" max-vertical-offset="748">
-          <folding>
-            <marker date="1392597601469" expanded="true" signature="273:846" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1340:1424" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1611:1805" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -576,9 +630,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="20" selection-start="170" selection-end="170" vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="1819">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -592,9 +644,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="88" column="29" selection-start="3602" selection-end="3602" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1649">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -608,9 +658,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="0" selection-start="154" selection-end="154" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1122">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -624,9 +672,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="17" selection-start="125" selection-end="125" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="1224">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -638,9 +684,7 @@
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="17" selection-start="125" selection-end="125" vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="1224">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -671,13 +715,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Contributor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="27" selection-start="438" selection-end="438" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/GMT.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="2" column="48" selection-start="72" selection-end="72" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="272">
@@ -688,27 +725,28 @@
     <entry file="file://$PROJECT_DIR$/Thread.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="3" column="8" selection-start="68" selection-end="68" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="986">
-          <folding>
-            <marker date="1392597601469" expanded="true" signature="273:846" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1340:1424" placeholder="..." />
-            <marker date="1392597601469" expanded="true" signature="1611:1805" placeholder="..." />
-          </folding>
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Contributor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="27" selection-start="438" selection-end="438" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DAL.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="135" selection-start="233" selection-end="233" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3978">
+        <state line="14" column="74" selection-start="1218" selection-end="1218" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3961">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MsdnScraper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="219" column="52" selection-start="9900" selection-end="9900" vertical-scroll-proportion="8.366292" vertical-offset="0" max-vertical-offset="4284">
-          <folding>
-            <element signature="e#89#118#0" expanded="true" />
-          </folding>
+        <state line="229" column="40" selection-start="10511" selection-end="10511" vertical-scroll-proportion="0.43173432" vertical-offset="3557" max-vertical-offset="4454">
+          <folding />
         </state>
       </provider>
     </entry>

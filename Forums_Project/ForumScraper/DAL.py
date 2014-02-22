@@ -5,15 +5,14 @@ import pyodbc
 class DAL:
 
     CONNECTION_STRING = "DSN=DataHogDB"
-    FORUMS_LIST = "('sqlexpress','sqldataaccess','sharepointdevelopmentprevious','sharepointadminprevious',/*'sharepointdevelopment',*/" \
-                  "'sqlce','sharepointdevelopmentlegacy','sharepointgeneralprevious','sqlsmoanddmo','sharepointcustomizationprevious'," \
-                  "'sqlreplication','sharepointgeneral','sqlservicebroker','sharepointadmin','sqlintegrationservices'," \
-                  "'sqlreportingservices','sqlxml','sqlgetstarted','sqlsetupandupgrade','sqldisasterrecovery','sqldatawarehousing'," \
-                  "'sqlkjpowerpointforsharepoint','sqldatamining','sqlmds','sqldatabaseengine','sqlspatial','sqlnotificationservices'," \
-                  "'sqlsearch','sqldriverforphp','sharepointsearchlegacy','sharepointcustomization','sharepointsearch'," \
-                  "'sqlkjpowerpivotforexcel','sqlnetfx','sqlsecurity','sharepointgenerallegacy','sqlanalysisservices'," \
-                  "'sqldocumentation','sqldatabasemirroring','sqlkjmanageability','sharepointadminlegacy','sharepointcustomizationlegacy'," \
-                  "'sqlservermigration','sharepointsearchprevious','sqlserversamples','sqlkjappmsmgmt','sqltools','sqldataqualityservices','sqlazurelabssupport')"
+    FORUMS_LIST = "('sqlexpress','sqldataaccess','sharepointdevelopment','sqlsmoanddmo','sqlreplication','sqlkjpowerpointforsharepoint','sqlmds',"\
+        "'sqlnotificationservices','sharepointsearchlegacy','sharepointcustomization','sqlnetfx','sqlsecurity','sqlanalysisservices',"\
+        "'sqldatabasemirroring','sqlkjmanageability','sharepointadminlegacy','sqlservermigration','sqlkjappmsmgmt','sqldocumentation','sqlazurelabssupport',"\
+        "'sqlkjpowerpivotforexcel','sqldisasterrecovery','sqldatamining','sqldriverforphp','sqlspatial','sqldatawarehousing','sharepointgeneral'," \
+        "'sharepointsearchprevious','sharepointsearch','sharepointdevelopmentlegacy','sharepointcustomizationlegacy','sqlservicebroker'," \
+        "'sharepointdevelopmentprevious','sqlserversamples','sharepointgenerallegacy','sharepointcustomizationprevious','sharepointadmin','sqlsearch'," \
+        "'sqlce','sqlsetupandupgrade','sqldataqualityservices','sqlintegrationservices','sqlxml','sqlreportingservices','sqldatabaseengine','sqlgetstarted'," \
+        "'sharepointgeneralprevious','sqltools','sharepointadminprevious')"
 
     def __init__(self):
         self.connection = pyodbc.connect(self.CONNECTION_STRING)
@@ -70,7 +69,7 @@ class DAL:
             SELECT distinct f.[ID]
                 ,f.[Name]
             FROM [Forums].[dbo].[Forums] f
-            WHERE f.[Name] IN """ + self.FORUMS_LIST)
+            WHERE f.[Name] IN """ + self.FORUMS_LIST + " ORDER BY f.[Name] desc")
         rows = cursor.fetchall()
         forums = dict()
         for row in rows:

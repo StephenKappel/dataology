@@ -95,10 +95,12 @@ class MsdnScraper():
             # keep on looping through pages until I'm not getting anything new
             gotSome = True
             i = 0
+
             while gotSome:
 
                 gotSome = False
                 i += 1
+                print("About to scrape page " + str(i))
 
                 # use beautiful soup to parse thread id from the html
                 url = self.THREAD_LIST_URL_STUB + "&forum=" + forumKey + "&page=" + str(i)
@@ -114,23 +116,32 @@ class MsdnScraper():
                     #print (url)
 
                     # make request for xml
-                    try:
-                        scrapeTime = datetime.now()
-                        soup = BeautifulSoup(urllib.request.urlopen(url))
-                    except urllib.error.HTTPError:
-                        # this occurs in the case that a thread has been deleted since the time when the thread id was scraped
-                        continue
+                    success = False
+                    while not success:
+                        # incase of connection reset error, try, try again until it works
+                        try:
+                            # handle http errors that occur when a thread has been deleted since the time when the thread id was scraped
+                            try:
+                                scrapeTime = datetime.now()
+                                soup = BeautifulSoup(urllib.request.urlopen(url))
+                                success = True
+                            except urllib.error.HTTPError:
+                                success = True
+                                continue
+                        except (ConnectionResetError, TimeoutError):
+                            print("Encountered ConnectionResetError")
 
                     # start parsing thread
                     t = soup.find("thread")
                     messages = soup.find("messages")
+                    if messages is None:
+                        continue
                     firstMess = messages.find("message")
 
                     # check if the date is in the desired time range
                     createdOn = iso8601.parse_date(t.find("createdon").text)
                     if createdOn < self.MIN_DATE:
-                        gotSome = False
-                        break
+                        continue
                     gotSome = True
                     if createdOn >= self.MAX_DATE:
                         continue
@@ -211,7 +222,14 @@ class MsdnScraper():
 
                     myThreads.append(myThread)
 
-                print("scraped " + str(len(myThreads)) + " threads so far.")
+                    #save to database after every batch of 100 threads in order to prevent losing progress if script crashes
+                    if(len(myThreads) > 100):
+                        self.myDal.addUsers(myUsers)
+                        self.myDal.addThreads(myThreads,forumId)
+                        myThreads = list()
+                        myUsers = dict()
+
+                print("scraped " + str(len(myThreads)) + " more threads.")
 
             # after getting all threads for a given forum, make database submissions:
             # for users
@@ -240,7 +258,5 @@ def clean_html_markup(s):
 
 myScraper = MsdnScraper()
 #myScraper.scrapeForumsList()
-#myScraper.scrapeThreadsList()
-#myScraper.scrapeThreadDetail()
 myScraper.scrapeThreadsComplete()
 
