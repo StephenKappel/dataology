@@ -140,7 +140,7 @@ function drawMyVis() {
         .attr("height", HEIGHT)
         .attr("x", 30)
         .attr("font-size", "14px")
-        .attr("y", 350)
+        .attr("y", 330)
         .attr("class", "yaxis");
 
     wrappers = svg.selectAll(".major").data(myData).enter().append("g")
