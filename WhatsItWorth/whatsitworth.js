@@ -28,7 +28,7 @@ TOTAL_WIDTH = 1200,
 TOTAL_HEIGHT = 715;
 
 //define constant  to hold path to data file
-var DATA_FILE = "https://rawgithub.com/StephenKappel/dataology/master/WhatsItWorth/whatsitworth.csv";
+//var DATA_FILE = "https://raw.github.com/StephenKappel/dataology/master/WhatsItWorth/whatsitworth.csv";
 
 //initialize variables to use for storing scales
 var income_scale, popularity_scale, font_scale;
@@ -38,10 +38,10 @@ var svg, rects, groups, wrappers;
 //create a variable in which to store data read in from the csv file
 var myData;
 
-d3.csv(DATA_FILE, function (rawData) {
+//d3.csv(DATA_FILE, function (rawData) {
 
     //store data to variable so it can be accessed outside of this method
-    myData = rawData;
+myData = d3.csv.parse(d3.select("#csvdata").text()); //rawData;
 
     //make sure all of the data is typed as desired
     //(on first attempt), it appeared js was treating everything as strings)
@@ -347,7 +347,7 @@ d3.csv(DATA_FILE, function (rawData) {
         orderBars(ORDER_BY_INCOME);
         colorBars(COLOR_BY_GENDER);
     });
-});
+//});
 
 function drawDetailsTextFields() {
 
@@ -736,10 +736,6 @@ function drawDetailsTextFields() {
         .attr("opacity", 1)
         .text("Hover mouse over a box to see more details.");
     y += 25;
-
-    /*  
-     
-    */
 }
 
 function drawToggleButtons() {
