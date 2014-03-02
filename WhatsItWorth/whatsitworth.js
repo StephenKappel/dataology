@@ -1,9 +1,9 @@
 ﻿//define constants to help with formatting
 var LEFT_PADDING = 30,
-    TOP_PADDING = 100,
+    TOP_PADDING = 80,
     INCOME_WIDTH = 750,
     DETAIL_WIDTH = 400,
-    HEIGHT = 500,
+    HEIGHT = 480,
     WHITE_COL = "#B37061",
     AFR_AM_COL = "#90799C",
     HISPANIC_COL = "#0A918C",
@@ -22,10 +22,10 @@ var LEFT_PADDING = 30,
     TOGGLE_WIDTH = 90,
     TOGGLE_HEIGHT = 25,
     TOGGLE_SPACING = 350
-BAR_SPACE = 3,
-BACKGROUND_COL = "#393939",
-TOTAL_WIDTH = 1200,
-TOTAL_HEIGHT = 715;
+    BAR_SPACE = 3,
+    BACKGROUND_COL = "#393939",
+    TOTAL_WIDTH = 1200,
+    TOTAL_HEIGHT = 675;
 
 //define constant  to hold path to data file
 //var DATA_FILE = "https://raw.github.com/StephenKappel/dataology/master/WhatsItWorth/whatsitworth.csv";
