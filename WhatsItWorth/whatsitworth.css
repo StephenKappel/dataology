@@ -67,3 +67,6 @@ text.yaxis {
 text.hint {
     font-style: italic;
 }
+#csvdata {
+    display: none;
+}
