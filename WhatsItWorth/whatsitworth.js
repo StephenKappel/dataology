@@ -28,7 +28,7 @@ TOTAL_WIDTH = 1200,
 TOTAL_HEIGHT = 715;
 
 //define constant  to hold path to data file
-var DATA_FILE = "http://rawgithub.com/stephenkappel/dataology/master/whatsitworth/whatsitworth.csv";
+var DATA_FILE = "https://rawgithub.com/StephenKappel/dataology/master/WhatsItWorth/whatsitworth.csv";
 
 //initialize variables to use for storing scales
 var income_scale, popularity_scale, font_scale;
