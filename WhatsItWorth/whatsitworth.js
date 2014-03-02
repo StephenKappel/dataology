@@ -39,9 +39,10 @@ var svg, rects, groups, wrappers;
 var myData;
 
 //d3.csv(DATA_FILE, function (rawData) {
+function drawMyVis() {
 
     //store data to variable so it can be accessed outside of this method
-myData = d3.csv.parse(d3.select("#csvdata").text()); //rawData;
+    myData = d3.csv.parse(d3.select("#csvdata").text()); //rawData;
 
     //make sure all of the data is typed as desired
     //(on first attempt), it appeared js was treating everything as strings)
@@ -347,6 +348,7 @@ myData = d3.csv.parse(d3.select("#csvdata").text()); //rawData;
         orderBars(ORDER_BY_INCOME);
         colorBars(COLOR_BY_GENDER);
     });
+}
 //});
 
 function drawDetailsTextFields() {
