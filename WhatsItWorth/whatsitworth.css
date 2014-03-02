@@ -65,7 +65,7 @@ text.yaxis {
     glyph-orientation-vertical: 0;
 }
 text.hint {
-    font-style: italic;
+    /*font-style: italic;*/
 }
 #csvdata {
     display: none;

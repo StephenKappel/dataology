@@ -3,7 +3,7 @@ var LEFT_PADDING = 30,
     TOP_PADDING = 75,
     INCOME_WIDTH = 750,
     DETAIL_WIDTH = 400,
-    HEIGHT = 470,
+    HEIGHT = 455,
     WHITE_COL = "#B37061",
     AFR_AM_COL = "#90799C",
     HISPANIC_COL = "#0A918C",
@@ -25,7 +25,7 @@ var LEFT_PADDING = 30,
     BAR_SPACE = 3,
     BACKGROUND_COL = "#393939",
     TOTAL_WIDTH = 1200,
-    TOTAL_HEIGHT = 650;
+    TOTAL_HEIGHT = 635;
 
 //define constant  to hold path to data file
 //var DATA_FILE = "https://raw.github.com/StephenKappel/dataology/master/WhatsItWorth/whatsitworth.csv";
@@ -140,7 +140,7 @@ function drawMyVis() {
         .attr("height", HEIGHT)
         .attr("x", 30)
         .attr("font-size", "14px")
-        .attr("y", 370)
+        .attr("y", 350)
         .attr("class", "yaxis");
 
     wrappers = svg.selectAll(".major").data(myData).enter().append("g")
