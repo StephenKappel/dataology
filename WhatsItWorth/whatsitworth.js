@@ -1,6 +1,6 @@
 ﻿//define constants to help with formatting
 var LEFT_PADDING = 30,
-    TOP_PADDING = 80,
+    TOP_PADDING = 75,
     INCOME_WIDTH = 750,
     DETAIL_WIDTH = 400,
     HEIGHT = 480,
@@ -98,7 +98,7 @@ function drawMyVis() {
         .attr("class", "title")
         .attr("width", TOTAL_WIDTH)
         .attr("x", Math.floor(TOTAL_WIDTH / 2))
-        .attr("y", 45)
+        .attr("y", 30)
         .text("What's It Worth: The Economic Value of College Majors");
 
     //add source
@@ -108,7 +108,7 @@ function drawMyVis() {
         .attr("class", "source")
         .attr("width", TOTAL_WIDTH)
         .attr("x", Math.floor(TOTAL_WIDTH / 2))
-        .attr("y", 65)
+        .attr("y", 50)
         .text("Source: Georgetown University - Center on Education and the Workforce");
 
     drawDetailsTextFields();
@@ -371,19 +371,19 @@ function drawDetailsTextFields() {
 
     //title
     detailsGroup.append("text")
-       .attr("font-size", "20px")
+       .attr("font-size", "17px")
        .attr("font-weight", "bold")
        .attr("y", y)
        .attr("x", SYMBOL_X)
        .text("Major group:");
-    y += 30;
+    y += 25;
     detailsGroup.append("text")
         .attr("id", "txtMajorArea")
-        .attr("font-size", "20px")
+        .attr("font-size", "17px")
         .attr("font-weight", "bold")
         .attr("y", y)
         .attr("x", SYMBOL_X);
-    y += 45;
+    y += 40;
 
     //wages
     detailsGroup.append("text")
