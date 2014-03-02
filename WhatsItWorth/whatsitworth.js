@@ -3,7 +3,7 @@ var LEFT_PADDING = 30,
     TOP_PADDING = 75,
     INCOME_WIDTH = 750,
     DETAIL_WIDTH = 400,
-    HEIGHT = 480,
+    HEIGHT = 470,
     WHITE_COL = "#B37061",
     AFR_AM_COL = "#90799C",
     HISPANIC_COL = "#0A918C",
@@ -25,7 +25,7 @@ var LEFT_PADDING = 30,
     BAR_SPACE = 3,
     BACKGROUND_COL = "#393939",
     TOTAL_WIDTH = 1200,
-    TOTAL_HEIGHT = 675;
+    TOTAL_HEIGHT = 650;
 
 //define constant  to hold path to data file
 //var DATA_FILE = "https://raw.github.com/StephenKappel/dataology/master/WhatsItWorth/whatsitworth.csv";
@@ -354,7 +354,7 @@ function drawMyVis() {
 function drawDetailsTextFields() {
 
     //track y position as we create fields
-    var y = 0;
+    var y = 0, LINE_SPACING = 20;
 
     //column positions
     var SYMBOL_X = 0,
@@ -420,7 +420,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("text")
         .attr("class", "details")
@@ -443,7 +443,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("text")
         .attr("class", "details")
@@ -489,7 +489,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("text")
         .attr("class", "details-sym")
@@ -512,7 +512,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 40;
+    y += LINE_SPACING;
 
     detailsGroup.append("rect")
         .attr("class", "colorBlock")
@@ -532,7 +532,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("rect")
         .attr("class", "colorBlock")
@@ -572,7 +572,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("rect")
         .attr("class", "colorBlock")
@@ -592,7 +592,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("rect")
         .attr("class", "colorBlock")
@@ -612,7 +612,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("rect")
         .attr("class", "colorBlock")
@@ -632,7 +632,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("x", VALUE_X)
         .attr("text-anchor", "end");
-    y += 25;
+    y += LINE_SPACING;
 
     detailsGroup.append("rect")
         .attr("class", "colorBlock")
@@ -665,7 +665,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("In chart at left, each box represents a group");
-    y += 25;
+    y += LINE_SPACING;
     svg.append("text")
         .attr("class", "hint")
         .attr("width", DETAIL_WIDTH)
@@ -673,7 +673,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("of college majors. Along the x-axis, the box");
-    y += 25;
+    y += LINE_SPACING;
     svg.append("text")
         .attr("class", "hint")
         .attr("width", DETAIL_WIDTH)
@@ -681,7 +681,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("shows the range from lower quartile to upper");
-    y += 25;
+    y += LINE_SPACING;
     svg.append("text")
         .attr("class", "hint")
         .attr("width", DETAIL_WIDTH)
@@ -689,7 +689,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("quartile wages. The heights of the boxes are");
-    y += 25;
+    y += LINE_SPACING;
     svg.append("text")
         .attr("class", "hint")
         .attr("width", DETAIL_WIDTH)
@@ -697,7 +697,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("proportional to the popularity of the major");
-    y += 25;
+    y += LINE_SPACING;
     svg.append("text")
         .attr("class", "hint")
         .attr("width", DETAIL_WIDTH)
@@ -713,7 +713,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("The color striation of the boxes shows");
-    y += 25;
+    y += LINE_SPACING;
     svg.append("text")
         .attr("class", "hint")
         .attr("width", DETAIL_WIDTH)
@@ -721,7 +721,7 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("gender or ethnic composition of the major.");
-    y += 25;
+    y += LINE_SPACING;
     svg.append("text")
         .attr("class", "hint")
         .attr("width", DETAIL_WIDTH)
@@ -737,7 +737,6 @@ function drawDetailsTextFields() {
         .attr("y", y)
         .attr("opacity", 1)
         .text("Hover mouse over a box to see more details.");
-    y += 25;
 }
 
 function drawToggleButtons() {
