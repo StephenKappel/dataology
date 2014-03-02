@@ -1,0 +1,69 @@
+﻿text {
+    font-family: 'Lucida Sans';
+    stroke: white;
+    stroke-opacity: 0;
+    fill: white;
+}
+.annotation {
+    stroke: white;
+    stroke-width: 1px;
+    fill: white;
+    font-size: 16px;
+    text-anchor: middle;
+}
+.annotation-sym {
+    stroke: white;
+    stroke-width: 1px;
+    fill: white;
+    font-size: 16px;
+    text-anchor: middle;
+    stroke-opacity: 1;
+}
+text.toggle {
+    fill:white;
+    pointer-events: none;
+}
+rect.toggle {
+    fill:#FF8000;
+}
+.domain {
+    opacity: 0;
+}
+.axis line{
+    fill: none;
+    stroke: white;
+    shape-rendering: crispEdges;
+    height: 40px;
+    opacity: .25;
+}
+.axis text {
+    font-size: 13px;
+}
+.details text {
+    font-size: 16px;
+}
+text.details-sym  {
+    stroke-width: 1px;
+    font-size: 16px;
+    stroke-opacity: 1;
+}
+text.title {
+    font-size: 30px;
+    font-family: 'Palatino Linotype';
+    text-anchor: middle;
+}
+text.source {
+    font-size: 12px;
+    font-family: 'Palatino Linotype';
+    text-anchor: middle;
+    text-decoration: underline;
+    fill: white;
+    stroke: white;
+}
+text.yaxis {
+    writing-mode: tb;
+    glyph-orientation-vertical: 0;
+}
+text.hint {
+    font-style: italic;
+}
