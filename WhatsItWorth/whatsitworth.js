@@ -86,6 +86,8 @@ function drawMyVis() {
 
     //add an svg element in which to put my visualization
     svg = d3.select("body").select("#mySvg"); //append("svg");
+    svg.attr("width", TOTAL_WIDTH)
+        .attr("height", TOTAL_HEIGHT);
 
     //add background
     svg.append("rect")
