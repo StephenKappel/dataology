@@ -63,6 +63,8 @@ text.source {
 text.yaxis {
     writing-mode: tb;
     glyph-orientation-vertical: 0;
+    -webkit-transform: rotate(90deg); 
+    -moz-transform: rotate(90deg);
 }
 text.hint {
     /*font-style: italic;*/
