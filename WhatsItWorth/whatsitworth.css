@@ -49,12 +49,12 @@ text.details-sym  {
 }
 text.title {
     font-size: 22px;
-    font-family: 'Palatino Linotype';
+    font-family: 'Palatino Linotype',Baskerville;
     text-anchor: middle;
 }
 text.source {
     font-size: 12px;
-    font-family: 'Palatino Linotype';
+    font-family: 'Palatino Linotype',Baskerville;
     text-anchor: middle;
     text-decoration: underline;
     fill: white;
@@ -63,7 +63,6 @@ text.source {
 text.yaxis {
     writing-mode: tb;
     glyph-orientation-vertical: 0;
-    -webkit-transform: rotate(90deg); 
     -moz-transform: rotate(90deg);
 }
 text.hint {
