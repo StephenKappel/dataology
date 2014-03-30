@@ -4,7 +4,7 @@ import pyodbc
 
 class DAL:
 
-    CONNECTION_STRING = "DSN=DataHogDB"
+    CONNECTION_STRING = "DSN=LocalSQL"
     FORUMS_LIST = "('sqlexpress','sqldataaccess','sharepointdevelopment','sqlsmoanddmo','sqlreplication','sqlkjpowerpointforsharepoint','sqlmds',"\
         "'sqlnotificationservices','sharepointsearchlegacy','sharepointcustomization','sqlnetfx','sqlsecurity','sqlanalysisservices',"\
         "'sqldatabasemirroring','sqlkjmanageability','sharepointadminlegacy','sqlservermigration','sqlkjappmsmgmt','sqldocumentation','sqlazurelabssupport',"\
