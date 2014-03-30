@@ -1,0 +1,750 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .node {
+        stroke-width: 2px;
+    }
+
+    .prodLabel {
+        pointer-events: none;
+        font-size: small;
+        font-family: Arial;
+        stroke: white;
+        font-style: normal;
+        stroke-width: .5px;
+    }
+
+    .prodName {
+        pointer-events: none;
+        font-size: x-large;
+        font-family: Arial;
+    }
+
+    .prodDetails {
+        pointer-events: none;
+        font-size: medium;
+        font-family: Arial;
+    }
+
+    .link {
+        stroke: white;
+        stroke-opacity: .6;
+    }
+
+    text {
+        font-size: small;
+        font-family: Arial;
+        stroke: white;
+        fill: white;
+        stroke-opacity: 0;
+        font-style: normal;
+    }
+
+       
+</style>
+<head>
+    <title>Night Sky</title>
+</head>
+<body>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+
+    <svg id="parentSvg"></svg>
+    <script>
+
+        // where does the data live?
+
+        var DATA_FILE = "ProductCooccurrenceData_fake.json";
+
+        //define constant dimension variables
+
+        var parent = { width: 1450, height: 950 };
+        var header = { width: parent.width, height: 150 };
+        var diagram = { width: 650, height: 600, x: 5, y: header.height + 25 };
+        var description = { width: 875, height: 200, spacing: 20, x: 20, y: 60 };
+        var heatmap = { width: 500, height: 500, top: 250, bottom: 10, left: 250, right: 10, x: 650, y: 10 };
+        var labelbox = { width: 300, height: 11 };
+        var legend = { x: 130, y: diagram.y + diagram.height + 5}
+
+        //define some colors for use later
+
+        var heatColor1 = "#FF0000";
+        var heatColor2 = "#FF8000";
+        var bgColor = "#111111";
+
+        // initialize some variables to be used later
+
+        var strength_scale, radius_scale, product_order, link, node, labels, x, z, myGraph, featuredData;
+
+        // create the force layout
+
+        var force = d3.layout.force()
+            .charge(-1000)
+            .linkStrength(function (d) { return strength_scale(d.customers); })
+            .size([diagram.width, diagram.height]);
+
+        //add a background to the vis
+
+        var par = d3.select("#parentSvg")
+            .attr("width", parent.width)
+            .attr("height", parent.width);
+        par.append("rect")
+            .attr("width", parent.width)
+            .attr("height", parent.height)
+            .attr("fill", bgColor);
+
+        // add a title to the vis
+
+        par.append("text")
+            .style("font-size", "x-large")
+            .style("font-weight", "bold")
+            .attr("x", 20)
+            .attr("y", 40)
+            .text("Project Night Sky: Prioritizing Product Integrations");
+
+        // add lead-in description paragraph
+
+        var y = 80;
+        function addText(myText)
+        {
+            par.append("text")
+                .attr("class", "introtext")
+                .style("font-size", "medium")
+                .style("font-weight", "normal")
+                .attr("x", 20)
+                .attr("y", y)
+                .text(myText);
+            y += 20;
+        }
+
+        addText("Use the force-directed graph and heat map below to explore the co-existence of CA's products in customers' environments.");
+        y += 15;
+        addText("In the force-directed graph, each node represents a product (sized according to number of customers and colored by");
+        addText("business unit) and each edge represents the co-existence of the products it connects. The nodes naturally repel");
+        addText("each other and are only held together based on the strength of the co-existence between them, which is determined");
+        addText("by the number of customers owning both products. Data based on March 2013 through February 2014.");
+        y += 15;
+        addText("The heat map shows the number of customers having a given combination of products (yellow) and the number of");
+        addText("issues opened by these customers (red). Filter the heat map view to include only the customers who own a given");
+        addText("product by choosing a node in the force-directed graph or the name of the product on the heat map.");
+
+        // create place holder for force-directed diagram
+
+        var svg = par.append("svg")
+            .attr("width", diagram.width)
+            .attr("height", diagram.height)
+            .attr("x", diagram.x)
+            .attr("y", diagram.y);
+
+        // add a place hoder for the heat map
+
+        var hmsvg = par.append("svg")
+            .attr("x", heatmap.x)
+            .attr("y", heatmap.y)
+            .attr("width", heatmap.width + heatmap.left + heatmap.right)
+            .attr("height", heatmap.height + heatmap.top + heatmap.bottom);
+        hmsvg = hmsvg.append("g").attr("transform", "translate(" + heatmap.left + "," + heatmap.top + ")");
+
+        // add a place holder to put product detail text
+
+        var text_svg = par.append("svg")
+            .attr("y", description.y)
+            .attr("x", description.x)
+            .attr("width", description.width)
+            .attr("height", description.height);
+
+        // add a group to contain the legends
+
+        var legend_g = par.append("g")
+            .attr("transform", "translate(" + legend.x + ", " + legend.y + ")")
+            .attr("height", description.height);
+
+        // create scales for dealing with business unit color coding and sorting
+
+        var bu_scale = d3.scale.ordinal()
+            .domain(["IT BUSINESS MANAGEMENT", "MAINFRAME", "SECURITY", "INFRASTRUCTURE MANAGEMENT", "APPLICATION DELIVERY", "APPLICATION PERFORMANCE MGMT"])
+            .range(d3.range(6).reverse());
+        var bu_color_scale = d3.scale.ordinal()
+            .domain(["IT BUSINESS MANAGEMENT", "MAINFRAME", "SECURITY", "INFRASTRUCTURE MANAGEMENT", "APPLICATION DELIVERY", "APPLICATION PERFORMANCE MGMT"])
+            .range(["#1f77b4", "#2ca02c", "#9467bd", "#e377c2", "#7f7f7f", "#8c564b"]);
+
+        //initialize matrix which will store data for heat map
+
+        var matrix = [];
+
+        d3.json(DATA_FILE, function (error, graph) {
+
+            // store data in global variable for future access
+            myGraph = graph;
+
+            //create my scales            
+            strength_scale = d3.scale.pow().exponent(1.05)
+                .range([0.2, 1])
+                .domain([d3.min(graph.nodes, function (d) { return d.customers; }), d3.max(graph.nodes, function (d) { return d.customers; })]);
+
+            strength_scale2 = d3.scale.pow().exponent(1.05)
+                .range([0.4, 1])
+                .domain([d3.min(graph.nodes, function (d) { return d.customers; }), d3.max(graph.nodes, function (d) { return d.customers; })]);
+
+            radius_scale = d3.scale.sqrt()
+                .range([7, 20])
+                .domain([d3.min(graph.nodes, function (d) { return d.customers; }), d3.max(graph.nodes, function (d) { return d.customers; })]);
+
+            // remember # of nodes in the diagram
+            var n = myGraph.nodes.length;
+
+            // initialize the positions deterministically, for better results.
+            myGraph.nodes.forEach(function (d, i) { d.x = d.y = diagram.width / n * i; });
+
+            //create force layout and move nodes into initial position
+            force
+                .nodes(graph.nodes)
+                .links(graph.links)
+                .friction(0.9)
+                .start();
+            for (var i = n * 10; i > 0; --i) force.tick();
+            force.stop();
+
+            //create links
+            link = svg.selectAll(".link")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("class", "link")
+                .attr("opacity", function (d) { return strength_scale2(d.customers); })
+                .style("stroke-width", function (d) { return strength_scale(d.customers) * 10; });
+
+            //create nodes (group)
+            node = svg.selectAll(".node")
+                .data(graph.nodes)
+                .enter().append("g")
+                .attr("class", "node")
+                // show product name on hover
+                .on("mouseover", function (d) {
+                    d3.select("#text" + d.index)
+                        .attr("opacity", 1);
+                })
+                .on("mouseout", function (d) {
+                    d3.select("#text" + d.index)
+                        .attr("opacity", 0);
+                    d3.selectAll(".nodecirc")
+                        .attr("opacity", 1);
+                })
+                // select the product on click
+                .on("mouseup", function (d) {
+                    selectProduct(d.index);
+                });
+
+            // add the colored circles
+            node.append("circle")
+                .attr("class", "nodecirc")
+                .attr("x", function (d) { return -0.5 * radius_scale(d.customers); })
+                .attr("y", function (d) { return -0.5 * radius_scale(d.customers); })
+                .attr("r", function (d) { return radius_scale(d.customers); })
+                .style("fill", function (d) { return bu_color_scale(d.bu); })
+                .attr("id", function (d) { return "circle" + d.index; })
+                .attr("stroke-opacity", 1)
+                .attr("stroke", bgColor);
+
+            //add lables to nodes
+            labels = svg.selectAll(".prodLabel")
+                .data(graph.nodes)
+                .enter()
+                .append("g")
+                .attr("class", "prodLabel")
+                .attr("id", function (d) { return "text" + d.index; })
+                .attr("opacity", 0);
+            labels.append("text")
+                .text(function (d) { return d.product; })
+                .attr("x", 0)
+                .attr("y", labelbox.height);
+            
+            svg.on("mousemove", function () {
+                if (force.alpha() <= 0) {
+                    updateDiagram();
+                }
+            });
+
+            //start responding to dragging of nodes
+            node.call(force.drag);
+
+            //define tick function explicitly
+            force.on("tick", function () {
+                updateDiagram();
+            });
+
+            // create text object to show the details about a selected product
+
+            var lineCount = 2;
+
+            var text_g = text_svg.append("g")
+                .attr("width", description.width)
+                .attr("height", description.height)
+                .attr("opacity", 0)
+                .attr("id", "text_g");
+            
+            /*text_g.append("rect")
+                .attr("width", description.width)
+                .attr("height", description.height)
+                .attr("fill", bgColor);*/
+
+            text_g.append("text")
+                .attr("id", "product")
+                .attr("class", "prodName")
+                .attr("x", 0)
+                .attr("y", lineCount * description.spacing);
+            lineCount++;
+
+            text_g.append("text")
+                .attr("id", "bu")
+                .attr("class", "prodDetails")
+                .attr("x", 0)
+                .attr("y", lineCount * description.spacing);
+            lineCount++;
+
+            text_g.append("text")
+                .attr("id", "customers")
+                .attr("class", "prodDetails")
+                .attr("x", 0)
+                .attr("y", lineCount * description.spacing);
+            lineCount++;
+
+            text_g.append("text")
+                .attr("id", "issues")
+                .attr("class", "prodDetails")
+                .attr("x", 0)
+                .attr("y", lineCount * description.spacing);
+            lineCount++;
+
+            /* Create heat map */
+
+            x = d3.scale.ordinal().rangeBands([0, heatmap.width]);
+
+            var nodes = myGraph.nodes;
+
+            // compute index per node.
+            nodes.forEach(function (node, i) {
+                node.index = i;
+                matrix[i] = d3.range(n).map(function (j) { return { x: j, y: i, z: 0 }; });
+            });
+
+            // compute the order
+            product_order = d3.range(n).sort(function (a, b) { return nodes[b].customers + bu_scale(nodes[b].bu) * 1000 - nodes[a].customers - bu_scale(nodes[a].bu) * 1000; });
+            x.domain(product_order);
+
+            // add a group for each row
+            var row = hmsvg.selectAll(".row")
+                .data(matrix)
+              .enter().append("g")
+                .attr("class", "row")
+                .attr("transform", function (d, i) { return "translate(0," + x(i) + ")"; });
+            // row product labels
+            row.append("text")
+                .attr("class", "hmprod")
+                .attr("id", function (d) { return "hmprod" + d[0].y; })
+                .attr("x", -6)
+                .attr("y", x.rangeBand() / 2)
+                .attr("dy", ".32em")
+                .attr("text-anchor", "end")
+                .text(function (d, i) { return nodes[i].product; })
+                .style("fill", function (d, i) { return bu_color_scale(nodes[i].bu); })
+            // rects to handle mouse clicks
+            row.append("rect")
+                .attr("class", "mask")
+                .attr("x", -heatmap.left - 6)
+                .attr("y", 0)
+                .attr("height", x.rangeBand())
+                .attr("width", heatmap.left)
+                .style("fill", bgColor)
+                .attr("opacity", 0)
+                .on("mouseup", function (d) { selectProduct(d[0].y);});
+
+            // add a group for each column
+            var column = hmsvg.selectAll(".column")
+                .data(matrix)
+              .enter().append("g")
+                .attr("class", "column")
+                .attr("transform", function (d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+            // col product labels
+            column.append("text")
+                .attr("class", "hmprod")
+                .attr("id", function (d) { return "hmprodc" + d[0].y; })
+                .attr("x", 6)
+                .attr("y", x.rangeBand() / 2)
+                .attr("dy", ".32em")
+                .attr("text-anchor", "start")
+                .text(function (d, i) { return nodes[i].product; })
+                .style("fill", function (d, i) { return bu_color_scale(nodes[i].bu); });
+            // rects to handle mouse clicks
+            column.append("rect")
+                .attr("class", "mask")
+                .attr("x", 6)
+                .attr("y", 0)
+                .attr("height", x.rangeBand())
+                .attr("width", heatmap.left)
+                .style("fill", bgColor)
+                .attr("opacity", 0)
+                .on("mouseup", function (d) { selectProduct(d[0].y); });
+
+            // legend showing circle size mapping to # of customers
+
+            legend_g.append("text")
+                .text("Customers")
+                .style("font-size", "large")
+                .attr("x", 0)
+                .attr("y", 30);
+
+            legend_g.append("circle")
+                .attr("r", radius_scale(250))
+                .style("fill", "white")
+                .attr("stroke-opacity", 1)
+                .attr("stroke", bgColor)
+                .attr("transform", "translate(135,25)");
+            legend_g.append("text")
+                .text("250")
+                .style("font-size", "medium")
+                .attr("x", 150)
+                .attr("y", 30);
+
+            legend_g.append("circle")
+                .attr("r", radius_scale(500))
+                .style("fill", "white")
+                .attr("stroke-opacity", 1)
+                .attr("stroke", bgColor)
+                .attr("transform", "translate(215,25)");
+            legend_g.append("text")
+                .text("500")
+                .style("font-size", "medium")
+                .attr("x", 235)
+                .attr("y", 30);
+
+            legend_g.append("circle")
+                .attr("r", radius_scale(1000))
+                .style("fill", "white")
+                .attr("stroke-opacity", 1)
+                .attr("stroke", bgColor)
+                .attr("transform", "translate(305,25)");
+            legend_g.append("text")
+                .text("1,000")
+                .style("font-size", "medium")
+                .attr("x", 330)
+                .attr("y", 30);
+
+            // legend showing color mappings to business units
+            
+            legend_g.append("text")
+                                .text("Business unit")
+                                .style("font-size", "large")
+                                .attr("x", 0)
+                                .attr("y", 107);
+            for(var i=0; i<bu_color_scale.domain().length; i++)
+            {
+                legend_g.append("text")
+                    .text(bu_color_scale.domain()[i])
+                    .style("font-size", "small")
+                    .style("fill", bu_color_scale.range()[i])
+                    .attr("x", 130)
+                    .attr("y", 70 + i*15);
+            }
+
+            // legend showing color mappings to # of customers
+
+            legend_g.append("text")
+                .text("Customers")
+                .style("font-size", "large")
+                .attr("x", heatmap.x)
+                .attr("y", 30);
+
+            legend_g.append("rect")
+                .attr("id", "legCustCol3")
+                .attr("width", x.rangeBand())
+                .attr("height", x.rangeBand())
+                .attr("transform", "translate(" + (heatmap.x + 130) + ", " + x.rangeBand() + ")");
+            legend_g.append("text")
+                .attr("id", "legCustNum3")
+                .style("font-size", "medium")
+                .attr("x", heatmap.x + 180)
+                .attr("y", 30)
+                .attr("text-anchor", "end")
+                .attr("width", "100");
+
+            legend_g.append("rect")
+                .attr("id", "legCustCol2")
+                .attr("width", x.rangeBand())
+                .attr("height", x.rangeBand())
+                .attr("transform", "translate(" + (heatmap.x + 230) + ", " + x.rangeBand() + ")");
+            legend_g.append("text")
+                .attr("id", "legCustNum2")
+                .style("font-size", "medium")
+                .attr("x", heatmap.x + 280)
+                .attr("y", 30)
+                .attr("text-anchor", "end")
+                .attr("width", "100");
+
+            legend_g.append("rect")
+                .attr("id", "legCustCol1")
+                .attr("width", x.rangeBand())
+                .attr("height", x.rangeBand())
+                .attr("transform", "translate(" + (heatmap.x + 330) + ", " + x.rangeBand() + ")");
+            legend_g.append("text")
+                .attr("id", "legCustNum1")
+                .style("font-size", "medium")
+                .attr("x", heatmap.x + 380)
+                .attr("y", 30)
+                .attr("text-anchor", "end")
+                .attr("width", "100");
+
+            // legend showing color mappings to # of issues
+
+            var myY = 107;
+
+            legend_g.append("text")
+                .text("Issues")
+                .style("font-size", "large")
+                .attr("x", heatmap.x)
+                .attr("y", myY);
+
+            legend_g.append("rect")
+                .attr("id", "legIssCol3")
+                .attr("width", x.rangeBand())
+                .attr("height", x.rangeBand())
+                .attr("transform", "translate(" + (heatmap.x + 130) + ", " + (myY + x.rangeBand() - 30)+ ")");
+            legend_g.append("text")
+                .attr("id", "legIssNum3")
+                .style("font-size", "medium")
+                .attr("x", heatmap.x + 210)
+                .attr("y", myY)
+                .attr("text-anchor", "end")
+                .attr("width", "100");
+
+            legend_g.append("rect")
+                .attr("id", "legIssCol2")
+                .attr("width", x.rangeBand())
+                .attr("height", x.rangeBand())
+                .attr("transform", "translate(" + (heatmap.x + 230) + ", " + (myY + x.rangeBand() - 30) + ")");
+            legend_g.append("text")
+                .attr("id", "legIssNum2")
+                .style("font-size", "medium")
+                .attr("x", heatmap.x + 310)
+                .attr("y", myY)
+                .attr("text-anchor", "end")
+                .attr("width", "100");
+
+            legend_g.append("rect")
+                .attr("id", "legIssCol1")
+                .attr("width", x.rangeBand())
+                .attr("height", x.rangeBand())
+                .attr("transform", "translate(" + (heatmap.x + 330) + ", " + (myY + x.rangeBand() - 30) + ")");
+            legend_g.append("text")
+                .attr("id", "legIssNum1")
+                .style("font-size", "medium")
+                .attr("x", heatmap.x + 410)
+                .attr("y", myY)
+                .attr("text-anchor", "end")
+                .attr("width", "100");
+
+            //draw everything and let's get started!
+
+            featuredData = null;
+            updateHeatmap();
+            updateDescription();
+            updateDiagram();
+
+        });
+
+        // highlight product in diagram, filter heat map, and show text details when a product is selected
+        function selectProduct(ind)
+        {
+            data = myGraph.nodes[ind];
+
+            if (featuredData == null || data != featuredData) {
+                d3.selectAll(".nodecirc")
+                    .attr("stroke", bgColor);
+                d3.select("#circle" + ind)
+                    .attr("stroke", "white");
+                featuredData = data;
+            }
+            else {
+                d3.select("#circle" + ind)
+                    .attr("stroke", bgColor);
+                featuredData = null;
+            }
+
+            updateDescription();
+            updateHeatmap();
+        }
+
+        // spotlight the row and column labels on heat map for a given mouse hover position
+        function highlight(indr, indc) {
+            console.info(indr + " " + indc);
+            d3.selectAll(".hmprod")
+                .attr("opacity", 0.5);
+            d3.select("#hmprod" + indr).attr("opacity", 1);
+            d3.select("#hmprodc" + indc).attr("opacity", 1);
+        }
+
+        // restore all heatmap labels to full brightness
+        function unhighlight() {
+            d3.selectAll(".hmprod")
+                .attr("opacity", 1);
+        }
+
+        // update the position of all display elements in the force-directed diagram based on the force layout
+        function updateDiagram()
+        {
+            node.attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ") "; });
+
+            labels.attr("transform", function (d) {
+                return "translate(" + (d.x + radius_scale(d.customers) + 3)
+                    + ", " + (d.y - labelbox.height / 2) + ")";
+            });
+
+            link.attr("x1", function (d) { return d.source.x; })
+                .attr("y1", function (d) { return d.source.y; })
+                .attr("x2", function (d) { return d.target.x; })
+                .attr("y2", function (d) { return d.target.y; });
+        }
+
+        // update text to show currently selected product details
+        function updateDescription() {
+            if (featuredData == null) {
+                d3.select("#text_g").attr("opacity", 0);
+                d3.selectAll(".introtext").attr("opacity", 1);
+            }
+            else {
+                d3.select("#text_g").attr("opacity", 1);
+                d3.selectAll(".introtext").attr("opacity", 0);
+                d3.select("#product").text(featuredData.product);
+                d3.select("#bu").text("Business unit: " + featuredData.bu);
+                d3.select("#customers").text("Number of customers: " + commaSeparateNumber(featuredData.customers));
+                d3.select("#issues").text("Number of issues: " + commaSeparateNumber(featuredData.issues));
+            }
+        }
+
+        //refresh the rects in the heat map based on currently selected product
+        function updateHeatmap() {
+
+            //set every matrix entry to zero
+            for (i = 0; i < matrix.length; i++) {
+                entry = matrix[i];
+                for (j = 0; j < matrix.length; j++) {
+                    entry[j] = { x: j, y: i, z: 0 };
+                }
+            }
+
+            //initialize variable that will be used to find maxes
+            var max_iss = 0;
+            var max_cust = 0;
+
+            //update the heatmap matrix's values and find the maximum values
+
+            //when we are showing high-level view
+            if( featuredData == null )
+            {
+                myGraph.links.forEach(function (link) {
+                    if (product_order.indexOf(link.source.index) > product_order.indexOf(link.target.index)) {
+                        matrix[link.source.index][link.target.index].z = link.issues;
+                        if (link.issues > max_iss)
+                            max_iss = link.issues;
+                        matrix[link.source.index][link.target.index].cust = false;
+
+                        matrix[link.target.index][link.source.index].z = link.customers;
+                        if (link.customers > max_cust)
+                            max_cust = link.customers;
+                        matrix[link.target.index][link.source.index].cust = true;
+
+                    }
+                    else {
+                        matrix[link.source.index][link.target.index].z = link.customers;
+                        if (link.customers > max_cust)
+                            max_cust = link.customers;
+                        matrix[link.source.index][link.target.index].cust = true;
+
+                        matrix[link.target.index][link.source.index].z = link.issues;
+                        if (link.issues > max_iss)
+                            max_iss = link.issues;
+                        matrix[link.target.index][link.source.index].cust = false;
+                    }
+                });
+            }
+            //when showing specific product-level view
+            else
+            {
+                featuredData.links.forEach(function (link) {
+                    if (product_order.indexOf(link.source) > product_order.indexOf(link.target)) {
+                        matrix[link.source][link.target].z = link.issues;
+                        if (link.issues > max_iss)
+                            max_iss = link.issues;
+                        matrix[link.source][link.target].cust = false;
+                    }
+                    else {
+                        matrix[link.source][link.target].z = link.customers;
+                        if (link.customers > max_cust)
+                            max_cust = link.customers;
+                        matrix[link.source][link.target].cust = true;
+                    }
+                });
+            }            
+
+            // refresh scales based on maximum values being displayed in the heat map
+            iss_scale = d3.scale.linear().range([heatColor1, bgColor]).domain([max_iss, 0]);
+            cust_scale = d3.scale.linear().range([heatColor2, bgColor]).domain([max_cust, 0]);
+
+            //make the updates to the cell colors and tool tips
+            hmsvg.selectAll(".row")
+                .data(matrix)
+                .each(function (row) {
+                    var cell = d3.select(this).selectAll(".cell")
+                        .data(row);
+                    cell.enter().append("rect")
+                        .attr("class", "cell")
+                        .attr("x", function (d) { return x(d.x); })
+                        .attr("width", x.rangeBand())
+                        .attr("height", x.rangeBand())
+                        .on("mouseover", function (d) { highlight(d.y, d.x); })
+                        .on("mouseout", function () { unhighlight(); })
+                        .append("title");
+                    cell
+                        .transition()
+                        .duration(1000)
+                        .style("fill", function (d) { return d.cust ? cust_scale(d.z) : iss_scale(d.z); })
+
+                    cell.select("title").text(function (d) { if (d.z == 0) return "0"; return d.cust ? d.z + " customers" : commaSeparateNumber(d.z) + " issues"; });
+                });
+
+            //update legend
+
+            d3.select("#legCustCol1")
+                .attr("fill", cust_scale(Math.round(max_cust / 25) * 25));
+            d3.select("#legCustNum1")
+                .text(commaSeparateNumber(Math.round(max_cust / 25) * 25));
+            d3.select("#legCustCol2")
+                .attr("fill", cust_scale(Math.round(max_cust * 2 / 3 / 25) * 25));
+            d3.select("#legCustNum2")
+                .text(commaSeparateNumber(Math.round(max_cust * 2 / 3 / 25) * 25));
+            d3.select("#legCustCol3")
+                .attr("fill", cust_scale(Math.round(max_cust / 3 / 25) * 25));
+            d3.select("#legCustNum3")
+                .text(commaSeparateNumber(Math.round(max_cust / 3 / 25) * 25));
+
+            d3.select("#legIssCol1")
+                .attr("fill", iss_scale(Math.round(max_iss / 500) * 500));
+            d3.select("#legIssNum1")
+                .text(commaSeparateNumber(Math.round(max_iss / 500) * 500));
+            d3.select("#legIssCol2")
+                .attr("fill", iss_scale(Math.round(max_iss * 2 / 3 / 500) * 500));
+            d3.select("#legIssNum2")
+                .text(commaSeparateNumber(Math.round(max_iss * 2 / 3 / 500) * 500));
+            d3.select("#legIssCol3")
+                .attr("fill", iss_scale(Math.round(max_iss / 3 / 500) * 500));
+            d3.select("#legIssNum3")
+                .text(commaSeparateNumber(Math.round(max_iss / 3 / 500) * 500));
+        }
+
+        //format a number to put commas in as thousands separators
+        function commaSeparateNumber(val) {
+            while (/(\d+)(\d{3})/.test(val.toString())) {
+                val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
+            }
+            return val;
+        }
+
+    </script>
