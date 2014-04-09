@@ -157,6 +157,14 @@ g
 #histogram - unique contributors/num thread
 hist(forums$Num_Unique_Contributors / forums$Num_Threads, breaks=5)
 
+
+########################## Thread Data #############################
+
+#query the database and put results in a dataframe
+threads = sqlQuery(myDB, "SELECT * FROM Forums.dbo.Thread_Summary", stringsAsFactors=FALSE)
+
+head(threads)
+
 # #get summary data about creation dates
 # summary(threads$Created_On)
 # summary(as.POSIXlt(threads$Created_On)$mon)
