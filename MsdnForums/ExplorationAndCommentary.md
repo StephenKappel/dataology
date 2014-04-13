@@ -1,4 +1,4 @@
-Success Factors in MSDN Forums
+Exploring MSDN Forum Data
 ========================================================
 
 
@@ -111,16 +111,12 @@ nbins <- 10
 for (ind in 4:8){
   # plot a histogram
   print(ggf + geom_histogram(aes_string(x = colnames(forums)[ind]), binwidth = diff(range(forums[,ind]))/nbins))
-  
-rm(ggf)
 }
+
+rm(ggf)
 ```
 
-```
-## Error: object 'ggf' not found
-```
-
-![plot of chunk forums.hist](figure/forums_hist.png) 
+![plot of chunk forums.hist](figure/forums_hist1.png) ![plot of chunk forums.hist](figure/forums_hist2.png) ![plot of chunk forums.hist](figure/forums_hist3.png) ![plot of chunk forums.hist](figure/forums_hist4.png) ![plot of chunk forums.hist](figure/forums_hist5.png) 
 
 
 The results look normal-ish, but the small sample size gives us only a rough picture. The vote-related graphs are skewed by some outliers, so let's remove the outliers and replot.
@@ -197,7 +193,7 @@ cor.sql <- cor(forums.sql[,4:22])
 ggplot(melt(cor.sql), aes(X1, X2, fill=value)) + geom_tile() + 
   fill.grad + axis.theme + labs(y="", x="", title = "SQL Forums")
 
-rm(fill_grad, axis.theme, cor.all, cor.sql, cor.sp)
+rm(fill_grad, cor.all, cor.sql, cor.sp)
 ```
 
 ![plot of chunk forums.cor](figure/forums_cor1.png) ![plot of chunk forums.cor](figure/forums_cor2.png) ![plot of chunk forums.cor](figure/forums_cor3.png) 
@@ -370,7 +366,7 @@ threads$TTFR_Group <- floor(threads$Time_To_First_Reply + 0.5)
 ```
 
 
-### Distributions
+### Success Factor Distributions
 
 Let's see how the success metrics are distributed at the thread level.
 
@@ -395,58 +391,39 @@ ggt + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(
 ![plot of chunk threads.hist.success](figure/threads_hist_success1.png) ![plot of chunk threads.hist.success](figure/threads_hist_success2.png) ![plot of chunk threads.hist.success](figure/threads_hist_success3.png) ![plot of chunk threads.hist.success](figure/threads_hist_success4.png) 
 
 
-That's an interesting double-peak in Time_To_First_Answer. Is that because we're mixing SQL and SharePoint? Let's take a look at each one separately. First SQL...
+That's an interesting double-peak in Time_To_First_Answer. Is that because we're mixing SQL and SharePoint? Let's take a look both forum categories side-by-side.
 
 
 ```r
-# create ggplot2 object
+# create ggplot2 objects
 ggt.sql <- ggplot(data = subset(threads, Forum_Category == "SQL Server")) + labs(title = "SQL Forums")
+ggt.sp <- ggplot(data = subset(threads, Forum_Category == "SharePoint")) + labs(title = "SharePoint Forums")
 
-# Num_Answers histogram
+# Num_Answers histograms
 ggt.sql + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
+ggt.sp + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
 
 # Time_To_First_Answer histogram
 ggt.sql + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
-
-# Num_Votes histogram
-ggt.sql + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
-
-# Num_Votes_Per_View histogram
-ggt.sql + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
-```
-
-![plot of chunk threads.hist.success.sql](figure/threads_hist_success_sql1.png) ![plot of chunk threads.hist.success.sql](figure/threads_hist_success_sql2.png) ![plot of chunk threads.hist.success.sql](figure/threads_hist_success_sql3.png) ![plot of chunk threads.hist.success.sql](figure/threads_hist_success_sql4.png) 
-
-
-Next let's look at SharePoint...
-
-
-```r
-# create ggplot2 object
-ggt.sp <- ggplot(data = subset(threads, Forum_Category == "SharePoint")) + labs(title = "SharePoint Forums")
-
-# Num_Answers histogram
-ggt.sp + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
-
-# Time_To_First_Answer density plot
 ggt.sp + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
 
 # Num_Votes histogram
+ggt.sql + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
 ggt.sp + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
 
 # Num_Votes_Per_View histogram
+ggt.sql + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
 ggt.sp + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
 ```
 
-![plot of chunk threads.hist.success.sp](figure/threads_hist_success_sp1.png) ![plot of chunk threads.hist.success.sp](figure/threads_hist_success_sp2.png) ![plot of chunk threads.hist.success.sp](figure/threads_hist_success_sp3.png) ![plot of chunk threads.hist.success.sp](figure/threads_hist_success_sp4.png) 
+![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp1.png) ![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp2.png) ![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp3.png) ![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp4.png) ![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp5.png) ![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp6.png) ![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp7.png) ![plot of chunk threads.hist.success.sql.sp](figure/threads_hist_success_sql_sp8.png) 
 
 
-That doesn't answer the double-peak question, but I do have a few quick observations:
+That doesn't answer the double-peak question, but I do have a couple quick observations:
 * Noticably more questions go unanswered in SharePoint forums as compared to SQL forums.
-* SQL forums users seem to be a little more generous with their voting.
 * Both forums seems to have the highest Time_To_First_Answer frequency at about 7 days and the second highest frequency at about 1 day.
 
-If the double-peak isn't caused by the different types of forums, could it be influenced by the weekend? Let's look at the days of the week individually and see if it becomes any clearer.
+If the double-peak isn't caused by the different types of forums, could it be influenced by where the weekend falls? Let's look at the days of the week individually and see if it becomes any clearer.
 
 
 ```r
@@ -461,6 +438,8 @@ for (day in 1:7)
 
 
 Ah, yes. That's it. The days with the highest volume (Monday through Thursday) all have a significant trough when the weekend comes around (somewhere between 2 and 5 days), leading to a trough in the overall graph in that 2-5 day range.
+
+### Other Distributions
 
 Out of curiousity, I'd also like to see the distribution of the question/title length attributes and the time of the post attributes. These are things that are known immediately when a thread is posted, so they could be good inputs for a prediction model.
 
@@ -531,55 +510,80 @@ ggt + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE) + coord_cartesian
 ![plot of chunk threads.hist.other2](figure/threads_hist_other21.png) ![plot of chunk threads.hist.other2](figure/threads_hist_other22.png) ![plot of chunk threads.hist.other2](figure/threads_hist_other23.png) ![plot of chunk threads.hist.other2](figure/threads_hist_other24.png) 
 
 
-Finally, I wonder when it is that Microsoft decides to get involved in threads. I'm going to plot some distributions for those threads that Microsoft got involved on and see if they have any distinct differences from the overall distributions.
+### Microsoft Involvement
+
+If I worked at Microsoft, I'd want to know how when employees are getting involved in threads and what impact it is having. So, I'm going to plot some distributions for those threads that Microsoft got involved in vs. those threads that Microsoft did not get involved in to see if there are any distinct differences.
 
 
 ```r
 
 # create ggplot2 object for only MSFT-involved threads
 ggt.msft <- ggplot(data = subset(threads, Num_MSFT_Posts > 0)) + labs(title = "Threads with MSFT Engagement")
+ggt.not.msft <- ggplot(data = subset(threads, Num_MSFT_Posts == 0)) + labs(title = "Threads without MSFT Engagement")
 
 # Num_Answers histogram
 ggt.msft + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
+ggt.not.msft + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
 
 # Time_To_First_Answer histogram
 ggt.msft + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
+ggt.not.msft + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
 
 # Num_Votes histogram
 ggt.msft + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
+ggt.not.msft + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
 
 # Title_Length density plot
 ggt.msft + geom_density(aes(x = Title_Length)) + coord_cartesian(xlim=c(0,250))
+ggt.not.msft + geom_density(aes(x = Title_Length)) + coord_cartesian(xlim=c(0,250))
 
 # Question_Length density plot
 ggt.msft + geom_density(aes(x = Question_Length)) + coord_cartesian(xlim=c(0,5000))
+ggt.not.msft + geom_density(aes(x = Question_Length)) + coord_cartesian(xlim=c(0,5000))
 
 # Created_Week_Day bar chart
 ggt.msft + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1)
+ggt.not.msft + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1)
 
 # Created_Month bar chart 
 ggt.msft + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1)
+ggt.not.msft + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1)
 
 # Created_Hour bar chart
-ggt + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1)
+ggt.msft + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1)
+ggt.not.msft + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1)
 
 # Num_Votes_Per_View histogram
 ggt.msft + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
+ggt.not.msft + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
 
 # asker points
 ggt.msft + geom_density(aes(x = Asker_Points)) + coord_cartesian(xlim=c(0,2000))
+ggt.not.msft + geom_density(aes(x = Asker_Points)) + coord_cartesian(xlim=c(0,2000))
 
 # subscribers
 ggt.msft + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1) + coord_cartesian(xlim=c(0,8.5))
+ggt.not.msft + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1) + coord_cartesian(xlim=c(0,8.5))
 
 # views
 ggt.msft + geom_density(aes(x = Num_Views)) + coord_cartesian(xlim=c(0,4000))
+ggt.not.msft + geom_density(aes(x = Num_Views)) + coord_cartesian(xlim=c(0,4000))
 
 # TTFR
 ggt.msft + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE) + coord_cartesian(xlim=c(0,10))
+ggt.not.msft + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE) + coord_cartesian(xlim=c(0,10))
+
+rm(ggt.msft, ggt.not.msft)
 ```
 
-![plot of chunk threads.msft](figure/threads_msft1.png) ![plot of chunk threads.msft](figure/threads_msft2.png) ![plot of chunk threads.msft](figure/threads_msft3.png) ![plot of chunk threads.msft](figure/threads_msft4.png) ![plot of chunk threads.msft](figure/threads_msft5.png) ![plot of chunk threads.msft](figure/threads_msft6.png) ![plot of chunk threads.msft](figure/threads_msft7.png) ![plot of chunk threads.msft](figure/threads_msft8.png) ![plot of chunk threads.msft](figure/threads_msft9.png) ![plot of chunk threads.msft](figure/threads_msft10.png) ![plot of chunk threads.msft](figure/threads_msft11.png) ![plot of chunk threads.msft](figure/threads_msft12.png) ![plot of chunk threads.msft](figure/threads_msft13.png) 
+![plot of chunk threads.msft](figure/threads_msft1.png) ![plot of chunk threads.msft](figure/threads_msft2.png) ![plot of chunk threads.msft](figure/threads_msft3.png) ![plot of chunk threads.msft](figure/threads_msft4.png) ![plot of chunk threads.msft](figure/threads_msft5.png) ![plot of chunk threads.msft](figure/threads_msft6.png) ![plot of chunk threads.msft](figure/threads_msft7.png) ![plot of chunk threads.msft](figure/threads_msft8.png) ![plot of chunk threads.msft](figure/threads_msft9.png) ![plot of chunk threads.msft](figure/threads_msft10.png) ![plot of chunk threads.msft](figure/threads_msft11.png) ![plot of chunk threads.msft](figure/threads_msft12.png) ![plot of chunk threads.msft](figure/threads_msft13.png) ![plot of chunk threads.msft](figure/threads_msft14.png) ![plot of chunk threads.msft](figure/threads_msft15.png) ![plot of chunk threads.msft](figure/threads_msft16.png) ![plot of chunk threads.msft](figure/threads_msft17.png) ![plot of chunk threads.msft](figure/threads_msft18.png) ![plot of chunk threads.msft](figure/threads_msft19.png) ![plot of chunk threads.msft](figure/threads_msft20.png) ![plot of chunk threads.msft](figure/threads_msft21.png) ![plot of chunk threads.msft](figure/threads_msft22.png) ![plot of chunk threads.msft](figure/threads_msft23.png) ![plot of chunk threads.msft](figure/threads_msft24.png) ![plot of chunk threads.msft](figure/threads_msft25.png) ![plot of chunk threads.msft](figure/threads_msft26.png) 
+
+
+The most obvious differences between Microsoft-involved threads and the rest of the population:
+
+* Microsoft involvement is skewed toward threads started by users with very few reputation points.
+* Threads where Microsoft is involved tend to have more views and more subscribers than other threads.
+* Microsoft is involved in a disproportionately few threads that are answered in the first one or two days.
 
 ### Correlations
 
@@ -589,18 +593,18 @@ ggt.msft + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE) + coord_cart
 cor.all <- cor(threads[,14:47], use="pairwise.complete.obs")
 ggplot(melt(cor.all), aes(X1, X2, fill=value)) + geom_tile() + 
   fill.grad + axis.theme + labs(y="", x="", title = "All Threads")  
+
+rm(cor.all, axis.theme)
 ```
 
-```
-## Error: object 'axis.theme' not found
-```
+![plot of chunk threads.corr](figure/threads_corr.png) 
 
 
 This is useless. On to something else...
 
 ### Responsiveness
 
-Is there some relationship between the length of the title/question and time to first answer/response?
+Is there some relationship between the length of the title/question and time to first reply/first answer?
 
 
 ```r
@@ -629,7 +633,9 @@ ggt + aes(y=Time_To_First_Answer, x=Question_Length_Group) +
 ![plot of chunk thread.length](figure/thread_length1.png) ![plot of chunk thread.length](figure/thread_length2.png) ![plot of chunk thread.length](figure/thread_length3.png) ![plot of chunk thread.length](figure/thread_length4.png) 
 
 
-Does the time the post was made affect it's ability to get answered?
+It appears that shorter titles and short questions lead to faster first replies and first answers. This could be that shorter questions are easier/simpler questions. Or, perhaps longer questions could discourage people from reading them.
+
+Does the time the post was made affect the speed at which it is replied to and answered?
 
 
 ```r
@@ -668,39 +674,53 @@ ggt + aes(y=Time_To_First_Answer, x=as.factor(Created_Month)) +
 ![plot of chunk thead.created](figure/thead_created1.png) ![plot of chunk thead.created](figure/thead_created2.png) ![plot of chunk thead.created](figure/thead_created3.png) ![plot of chunk thead.created](figure/thead_created4.png) ![plot of chunk thead.created](figure/thead_created5.png) ![plot of chunk thead.created](figure/thead_created6.png) 
 
 
-We are finally getting some interesting results. The length of the question and title and the time of thread creation are things that we know immediately when a thread is created. And, we observe some patterns between these things and the length of time before a thread is responded to and answered. Perhaps there is room for some prediction here.
+While a question posted on a weekend will get a faster initial reply, there isn't any evidence of the question actually being resolved any faster than any other day of the week.
 
-We see an improvement in time to first answer as the year progresses. Is this seasonal or a result of improvement in the forums (perhaps a higher focus internally from Microsoft or its partners)?
+Posting a question later in the year did, however, seem to yield both faster initial responses and answers. We saw earlier that the total number of questions asked decreased as the year progressed, so perhaps this trend shows that fewer questions posted allow the questions that are posted to gain more attention and be resolved more quickly. This hypothesis would also make sense with the observation that the weekends (with the lowest number of new issues) give the fastest initial responses.
+
+Is it possible that other factors played a role in the responsiveness improvement over the course of the year? For example, SharePoint 2013 went GA on 2/28/13. Maybe procedural changes lead to heaver involvment from experts as the year progressed. Let's take a look...
+
 
 
 ```r
 
 # MSFTs
 
-msft.ply <- ddply(threads, "Created_Month", summarise, Total_MSFT_Posts = sum(Num_MSFT_Posts), Total_Posts = sum(Num_Posts))
+msft.ply <- ddply(threads, "Created_Month", summarise, Total_MSFT_Posts = sum(Num_MSFT_Posts), 
+  Total_Posts = sum(Num_Posts))
 
-gg.msft <- ggplot(msft.ply, aes(x = factor(Created_Month))) + labs(title="SQL & SharePoint Threads", x="Thread Created Month") + geom_bar(stat = "identity")
+gg.msft <- ggplot(msft.ply, aes(x = factor(Created_Month))) + 
+  labs(title="SQL & SharePoint Threads", x="Thread Created Month") + 
+  geom_bar(stat = "identity")
 
 gg.msft + aes(y = Total_MSFT_Posts) + labs(y="Number of MSFT Posts") 
 gg.msft + aes(y = Total_MSFT_Posts/Total_Posts) + labs(y="MSFT Posts as Percent of Total Posts")
 
 # MVPs
 
-mvp.ply <- ddply(threads, "Created_Month", summarise, Total_MVP_Posts = sum(Num_MVP_Posts), Total_Posts = sum(Num_Posts))
+mvp.ply <- ddply(threads, "Created_Month", summarise, Total_MVP_Posts = sum(Num_MVP_Posts), 
+  Total_Posts = sum(Num_Posts))
 
-gg.mvp <- ggplot(mvp.ply, aes(x = factor(Created_Month))) + labs(title="SQL & SharePoint Threads", x="Thread Created Month") + geom_bar(stat = "identity")
+gg.mvp <- ggplot(mvp.ply, aes(x = factor(Created_Month))) + 
+  labs(title="SQL & SharePoint Threads", x="Thread Created Month") + 
+  geom_bar(stat = "identity")
 
 gg.mvp + aes(y = Total_MVP_Posts) + labs(y="Number of MVP Posts")
 gg.mvp + aes(y = Total_MVP_Posts/Total_Posts) + labs(y="MVP Posts as Percent of Total Posts")
 
 # Partners
 
-part.ply <- ddply(threads, "Created_Month", summarise, Total_Partner_Posts = sum(Num_Partner_Posts), Total_Posts = sum(Num_Posts))
+part.ply <- ddply(threads, "Created_Month", summarise, Total_Partner_Posts = sum(Num_Partner_Posts), 
+  Total_Posts = sum(Num_Posts))
 
-gg.part <- ggplot(part.ply, aes(x = factor(Created_Month))) + labs(title="SQL & SharePoint Threads", x="Thread Created Month") + geom_bar(stat = "identity")
+gg.part <- ggplot(part.ply, aes(x = factor(Created_Month))) + 
+  labs(title="SQL & SharePoint Threads", x="Thread Created Month") + 
+  geom_bar(stat = "identity")
 
 gg.part + aes(y = Total_Partner_Posts) + labs(y="Number of Partner Posts")
 gg.part + aes(y = Total_Partner_Posts/Total_Posts) + labs(y="Partner Posts as Percent of Total Posts")
+
+rm(ggt, msft.ply, gg.msft, mvp.ply, gg.mvp, part.ply, gg.part)
 ```
 
 ![plot of chunk thead.msft](figure/thead_msft1.png) ![plot of chunk thead.msft](figure/thead_msft2.png) ![plot of chunk thead.msft](figure/thead_msft3.png) ![plot of chunk thead.msft](figure/thead_msft4.png) ![plot of chunk thead.msft](figure/thead_msft5.png) ![plot of chunk thead.msft](figure/thead_msft6.png) 
@@ -708,7 +728,7 @@ gg.part + aes(y = Total_Partner_Posts/Total_Posts) + labs(y="Partner Posts as Pe
 
 It looks like MSFT employees took a break (just like everyone else) at the end of the year. There was an uptick in the relative level of MVP and partner activity, but I'm doubtful this made any significant difference. However, I did find it surprising to see the level of partner activity is greater than 25%. 
 
-To look at the seasonality aspect, we could scrape another year of data from the website, but I'll leave that for a follow up analysis...
+To look at the posibility of seasonality, we could scrape another year of data from the website, but I'll leave that for a follow up analysis...
 
 ### Success Rate
 
@@ -718,36 +738,43 @@ The ultimate question of a thread's success is really whether or not it ever got
 ```r
 # By month
 succ.ply <- ddply(threads, "Created_Month", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Created_Month), y = Successes/Total_Questions)) + labs(title="SQL & SharePoint Threads", x="Thread Created Month", y="Success Rate") + geom_point()
+ggplot(succ.ply, aes(x = factor(Created_Month), y = Successes/Total_Questions)) + 
+  labs(title="SQL & SharePoint Threads", x="Thread Created Month", y="Success Rate") + geom_point()
 
 # By week day
 succ.ply <- ddply(threads, "Created_Week_Day", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Created_Week_Day), y = Successes/Total_Questions)) + labs(title="SQL & SharePoint Threads", x="Thread Created Week Day", y="Success Rate") + geom_point()
+ggplot(succ.ply, aes(x = factor(Created_Week_Day), y = Successes/Total_Questions)) + 
+  labs(title="SQL & SharePoint Threads", x="Thread Created Week Day", y="Success Rate") + geom_point()
 
 # By time of day
 succ.ply <- ddply(threads, "Created_Hour", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Created_Hour), y = Successes/Total_Questions)) + labs(title="SQL & SharePoint Threads", x="Thread Created Hour", y="Success Rate") + geom_point()
+ggplot(succ.ply, aes(x = factor(Created_Hour), y = Successes/Total_Questions)) + 
+  labs(title="SQL & SharePoint Threads", x="Thread Created Hour", y="Success Rate") + geom_point()
 
 # By title length
 succ.ply <- ddply(threads, "Title_Length_Group", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = Title_Length_Group, y = Successes/Total_Questions)) + labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0,130), ylim=c(0.5, 1))
+ggplot(succ.ply, aes(x = Title_Length_Group, y = Successes/Total_Questions)) + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0,130), ylim=c(0.5, 1))
 
 # By question length
 succ.ply <- ddply(threads, "Question_Length_Group", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = Question_Length_Group, y = Successes/Total_Questions)) + labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0,2100), ylim=c(0.5, 1))
+ggplot(succ.ply, aes(x = Question_Length_Group, y = Successes/Total_Questions)) + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0,2100), ylim=c(0.5, 1))
 
 # By TTFR
 succ.ply <- ddply(threads, "TTFR_Group", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = TTFR_Group, y = Successes/Total_Questions)) + labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(-0.5,20.5), ylim=c(0, 1))
+ggplot(succ.ply, aes(x = TTFR_Group, y = Successes/Total_Questions)) + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(-0.5,20.5), ylim=c(0, 1))
 
-# By MSFT posts (bar chart)
+# By MSFT posts
 succ.ply <- ddply(threads, "Num_MSFT_Posts", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Num_MSFT_Posts), y = Successes/Total_Questions)) + labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0.5,5.5), ylim=c(0, 1))
+ggplot(succ.ply, aes(x = factor(Num_MSFT_Posts), y = Successes/Total_Questions)) + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0.5,5.5), ylim=c(0, 1))
+
+rm(succ.ply)
 ```
 
 ![plot of chunk thread.length.succ](figure/thread_length_succ1.png) ![plot of chunk thread.length.succ](figure/thread_length_succ2.png) ![plot of chunk thread.length.succ](figure/thread_length_succ3.png) ![plot of chunk thread.length.succ](figure/thread_length_succ4.png) ![plot of chunk thread.length.succ](figure/thread_length_succ5.png) ![plot of chunk thread.length.succ](figure/thread_length_succ6.png) ![plot of chunk thread.length.succ](figure/thread_length_succ7.png) 
 
 
-TODO: BUILD LINEAR MODEL OF TIME TO FIRST RESPONSE BASED ON FORUM, DATETIME, QUESTION LENGTH, TITLE LENGTH, REPUTATION OF ASKER
-
-TODO: Build model of time to first answer based on above?
+These graphs reveal much the same as our earlier graphs. More success is seen for questions posted later in the year and on weekends. Shorter title and questions get better results than longer ones. Here is one last insightful morsel, though: If an issue gets an initial reply during the first five days, it is about 75% likely to eventually get resolved successfully. But, as each day after the 5-day mark passes, the question gets less and less likely to receive a successful answer. By day 10, the likelihood of a successful resolution is only about 50%. 
