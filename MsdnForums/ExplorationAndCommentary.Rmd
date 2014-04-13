@@ -41,6 +41,8 @@ My scraping procedure followed these high-level steps:
 * __Use each thread ID to get an XML version of the thread.__ Conveniently, a web request like the following returns all the thread details in XML: social.msdn.microsoft.com/Forums/en-US/[thread id]?outputAs=xml
 * __Parse the XML and save the results to the database.__ From the XML, I selectively parsed characteristics of interest to me, and I calculated some derived values based on what was given. 
 
+To keep my initial exploration to a managable level while giving me enough to make it interesting, I scraped all the SharePoint and SQL (well, actually, only the ones in English) and all the threads in calendar year 2013.
+
 To make my life easier, I created two views in my database that would make things cleaner when it was time to start playing with the data in R:
 * Forum_Summary aggregates data at the forum level. That is, the view has one row for each forum, and the metrics reflect the attributes of the forum as a whole.
 * Thread_Summmary aggregates data at the thread level. That is, the view has one row for each thread, and the metrics reflect only the attributes of only a single thread.
@@ -74,14 +76,13 @@ Note that we have 22 columns. The first 3 are non-numeric and identify the colum
 
 As a start, I want to see how my success metrics are distributed. Is there a wide enough spread among forums for these to be meaningful metrics? Anything that jumps out? Let's create a histogram for each of them.
 
-```{r forums.hist, fig.width=4, fig.height=4}
+```{r forums.hist, fig.width=6, fig.height=4}
 # get ready to use ggplot2
 library(ggplot2)
 library(ggthemes)
 
 # create ggplot2 object
-ggf <- ggplot(data = forums) + labs(y = "Number of Forums", 
-  title = "SQL & SharePoint Forums")
+ggf <- ggplot(data = forums) + labs(title = "SQL & SharePoint Forums")
 
 # how many bins should be used in each graph?
 nbins <- 10
@@ -89,22 +90,28 @@ nbins <- 10
 # for each success metric
 for (ind in 4:8){
   # plot a histogram
-  print(ggf + geom_histogram(aes_string(x = colnames(forums)[ind]),
-    binwidth = diff(range(forums[,ind]))/nbins))
+  print(ggf + geom_histogram(aes_string(x = colnames(forums)[ind]), binwidth = diff(range(forums[,ind]))/nbins))
+  
+rm(ggf)
 }
 ```
 
-The results look normal-ish, but the small sample size gives us only a rough picture. The Avg_Votes_Per_View graph is skewed by some outliers, so let's remove the outliers and replot.
-```{r forums.hist2, fig.width=4, fig.height=4}
+The results look normal-ish, but the small sample size gives us only a rough picture. The vote-related graphs are skewed by some outliers, so let's remove the outliers and replot.
+```{r forums.hist2, fig.width=5.5, fig.height=4}
 forums.sub <- subset(forums, Avg_Votes_Per_View < 0.001)
-gg2 <- ggplot(data = forums.sub) + labs(y = "Number of Forums", 
-  title = "SQL & SharePoint Forums")
-print(gg2 + geom_histogram(aes(x = Avg_Votes_Per_View), binwidth = 0.0001))
+gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Forums")
+gg2 + geom_histogram(aes(x = Avg_Votes_Per_View), binwidth = 0.0001)
+
+forums.sub <- subset(forums, Avg_Num_Votes < 0.75)
+gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Forums")
+gg2 + geom_histogram(aes(x = Avg_Num_Votes), binwidth = 0.05)
+
+rm(forums.sub, gg2)
 ```
 
-What happens if we break these each into two graph -- once for each forum category?
+What happens if we break these each into two graph -- once for each forum category? How do the two forums compare?
 
-```{r forums.hist3, fig.width=4, fig.height=4}
+```{r forums.hist3, fig.width=5, fig.height=4}
 # create ggplot2 objects for each category
 forums.sp <- subset(forums, Forum_Category == "SharePoint")
 ggsp <- ggplot(data = forums.sp) + 
@@ -122,6 +129,7 @@ for (ind in 4:8){
   print(ggsp + geom_histogram(aes_string(x = colnames(forums)[ind]),
     binwidth = diff(range(forums.sp[,ind]))/nbins))
 }
+rm(ggsp, ggsql, nbins)
 ```
 
 ### Correlation
@@ -152,11 +160,13 @@ ggplot(melt(cor.sp), aes(X1, X2, fill=value)) + geom_tile() +
 cor.sql <- cor(forums.sql[,4:22])
 ggplot(melt(cor.sql), aes(X1, X2, fill=value)) + geom_tile() + 
   fill.grad + axis.theme + labs(y="", x="", title = "SQL Forums")
+
+rm(fill_grad, axis.theme, cor.all, cor.sql, cor.sp)
 ```
 
-To understand some of the highly correlated relationships better, let's take a look at some scatter plots, each with the success metric on the y-axis and the data points color-coded by forum category.
+That was a bad idea. Not very helpful, and most of the things that jump out are intuitively obvious. Perhaps some scatter plots (primarily with a success metric on the y-axis) and the data points color-coded by forum category will help.
 
-```{r forums.scatter, fig.width=6, fig.height=4}
+```{r forums.scatter, fig.width=5.5, fig.height=4}
 # scatter plot of percent threads answered vs. average number of answers per thread
 ggplot(forums, aes(y=Percent_Threads_Answered, x=Avg_Answers)) +
   geom_point(aes(color=Forum_Category)) +
@@ -235,13 +245,27 @@ ggplot(forums, aes(y=Mean_Time_To_First_Response, x=Avg_Question_Length)) +
 ggplot(forums, aes(y=Avg_Answers, x=Num_Threads)) +
   geom_point(aes(color=Forum_Category)) +
   scale_colour_excel()
+
+rm(forums, forums.sp, forums.sql)
 ```
 
-TODO: ADD OBSERVATIONS BASED ON THE SCATTER PLOTS
+My observations from looking at the above scatter plots follow. These do not reflect causation, only apparent patterns of correlation:
+
+* Approximately 2.5 contributors per thread seems to be an activity-level turning point, below which 75% or less of the questions posted will be answered, and above which 75% or more of the questions posted will be answered.
+* When it comes to answerings a higher percentage of questions posted, SQL tend to do better than SharePoint forums.
+* More posts per thread generally translates into more threads being answered. No surprise here.
+* Average first response times for the majority of SQL Server forums is are below 1.5 days. On the flip side, the majority of SharePoint forums have an average initial response time of over 3 days.
+* Even when we compare SharePoint and SQL forums of relatively the same size (in terms of the number of unique contributors during 2013), SharePoint forums are on average slower in providing an answer than are SQL forums. Maybe product complexity is a factor here?
+* SQL Server forums benefit from a higher rate of Microsoft involvement than does ShaerPoint.
+* Forums with MVPs contributing to over 40% of the threads have relatively quick average times to first answer.
+* Based on average thread views, SQL forums tend to get more traffic than SharePoint forums.
+* Based on number of threads created, seven of the top-ten largest forums are SharePoint forums.
 
 Looking at Threads
 ---------------------------
-Now that we got a high-level look at the forum level, let's drill down one level and look at threads. I'll start by loading the data from my database.
+Now that we got a high-level look at the forum level, I want to drill down a little deeper and look at thread-level data. 
+
+I'll start by loading the data from my database.
 
 ```{r threads.fetch}
 # query the database and put results in a dataframe
@@ -249,6 +273,7 @@ threads <- sqlQuery(myDB, "SELECT * FROM Forums.dbo.Thread_Summary",
   stringsAsFactors=FALSE) 
 # we can close the odbc connection now
 odbcClose(myDB) 
+rm(myDB)
 
 # make sure data is loaded as expected
 # we should have 72,324 threads
@@ -257,9 +282,9 @@ nrow(threads)
 colnames(threads)
 ```
 
-The first 13 columns are identifiers and data types that will not work well doing math (i.e. dates and booleans). Columns 14-17 are our success metrics. The remianing columns are attributes which might give us some interesting insight into what affects the success metrics.
+The first 13 columns are identifiers and data types that will not work well doing math (i.e. string, dates, and booleans). Columns 14-17 are our success metrics. The remaining columns are attributes which might give us some interesting insight into what drives the success metrics.
 
-I will also append a few columns with engineered features that will make my life a little easier later on.
+I will append a few columns to *threads* with engineered features that will make my life a little easier later on.
 
 ```{r threads.eng}
 # group title lengths into groups, with one group per 10 characters of length

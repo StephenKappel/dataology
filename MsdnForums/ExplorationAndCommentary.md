@@ -6,7 +6,7 @@ Success Factors in MSDN Forums
 
 Introduction
 -------------------------
-Working in a technical support organization, I have come to appreciate the value of forums in deflecting issues before they reach support queues. Smaller volumes of issues that support engineers need to work on translates to lowers costs and generally happier customers. In this project, I wanted to ask: What factors make a forum successful (or unsuccessful)? Through data exploration, I hoped to gain actionable insight into the things an organization can do (or avoid doing) to accelerate the successfulness of forums and the deflection of support issues.
+Working in a technical support organization, I have come to appreciate the value of forums in deflecting issues before they reach support queues. Smaller volumes of issues that support engineers need to work on translates to lowers costs and generally happier customers. In this project, I want to ask: What factors make a forum successful (or unsuccessful)? Through data exploration, I hope to gain actionable insights into the things an organization can do (or avoid doing) to accelerate the successful-ness of forums and the deflection of support issues.
 
 The notion of *success* in a forum is not easy to directly quantify. In a perfect world, we would want to measure the number of support issues *not* opened, which is obviously not possible in our reality. Therefore, we must use indirect measures to give us a directionally-correct understanding of our successfulness. Based on experience, I have chosen to quantify success in the following ways:
 
@@ -24,23 +24,26 @@ The notion of *success* in a forum is not easy to directly quantify. In a perfec
 
 In order to limit this project to publicly available information and use forums with which I had some prior experience, I decided to focus the project around the SharePoint and SQL Server [forums on MSDN (Microsoft Developer Network)](http://social.msdn.microsoft.com/Forums/en-US/home).
 
+DISCLAIMER: The work that follows is not intended to be a finely-proofed and edited report on the effectiveness of forums. It is an exploration, with notes on my thoughts as I explored this data for the first time. My graphics leave much to be desired and are intended more for my understanding of the data than for publication or general circulation to a broader audience. There will be plenty of time later for having some fun with D3 :-).
+
 Gathering and Preparing the Data
 ----------------------------------------
-All the data that I required was easily accessible by surfing the forums in a web browser. However, no API exists for getting a consolidated and nicely formatted data export of the forums content. Therefore, I used Python to scrape the desired data from MSDN web pages. As a repository for the scraped data, I created a SQL Server database.
+All the data that I am interested in for an initial analysis is easily accessible by surfing the forums in a web browser. However, no API exists for getting a consolidated and nicely-formatted data export of the forums' content. Therefore, I used Python to scrape the desired data from MSDN web pages. As a repository for the scraped data, I created a SQL Server Express database.
 
 My scraping procedure followed these high-level steps:
-* __Get a list of all the MSDN forum categories.__ I did this by parsing the source for the forum selection dialog box on MSDN.
-* __Get a list of all the MSDN forums.__ Using the forum categories, I was able to make requests in the following format to get the forums belonging to each category:\\http://social.msdn.microsoft.com/Forums/ api/category/getforumdetails?category=[category name]
+* __Get a list of all the MSDN forum categories.__ I did this by parsing the source for the forum selection dialog box on MSDN. That much was easy.
+* __Get a list of all the MSDN forums.__ Using the forum categories, I was able to make requests in the following format to get the forums belonging to each category: social.msdn.microsoft.com/Forums/api/category/getforumdetails?category=[category name]
 * __For each forum, get a list of thread IDs.__ This was accomplished with a Python script that set the forum filter and iterated through the pages of the listed threads, scraping the thread IDs from the page source.
-* __Use each thread ID to get an XML version of the thread.__ Conveniently, a web request like the following returns all the thread details in XML: http://social.msdn.microsoft.com/Forums/en-US/[thread id]?outputAs=xml
+* __Use each thread ID to get an XML version of the thread.__ Conveniently, a web request like the following returns all the thread details in XML: social.msdn.microsoft.com/Forums/en-US/[thread id]?outputAs=xml
 * __Parse the XML and save the results to the database.__ From the XML, I selectively parsed characteristics of interest to me, and I calculated some derived values based on what was given. 
-My Python code as well as the database's SQL dump -- including both the schema and data of the database -- may be found [here on GitHub](https://github.com/StephenKappel/dataology/tree/master/Forums_Project/ForumScraper).
 
-The result of my Python Script was a relational database in SQL Server, so before using R, I needed to aggregate the data in a meaningful and well-structured way to make manipulation in R as clean as possible. I did this by building database views that joined the data from my database tables together at two levels:
+To keep my initial exploration to a managable level while giving me enough to make it interesting, I scraped all the SharePoint and SQL (well, actually, only the ones in English) and all the threads in calendar year 2013.
+
+To make my life easier, I created two views in my database that would make things cleaner when it was time to start playing with the data in R:
 * Forum_Summary aggregates data at the forum level. That is, the view has one row for each forum, and the metrics reflect the attributes of the forum as a whole.
-* Thread_Summmary aggregates data at the thread level. That is, the view has one row for each thread, and the metrics reflect only the attributes of the one thread.
+* Thread_Summmary aggregates data at the thread level. That is, the view has one row for each thread, and the metrics reflect only the attributes of only a single thread.
 
-Note that my script scraped thread of the type "comment." These are either general discussion threads (which cannot be answered) or locked threads. To avoid these from muddying my results, the Forum_Summary and Thread_Summary views exclude these results (of which there are 1,498).
+Note that my script scraped threads of all types from MSDN. This includes *comment* threads, which are either general discussion threads (which cannot be answered) or locked threads. To avoid these from muddying my results, the Forum_Summary and Thread_Summary views exclude *comment* threads (of which I scraped 1,498).
 
 Looking at Forums
 ----------------------------
@@ -55,8 +58,7 @@ library(RODBC)
 # configured)
 myDB <- odbcConnect("LocalSQL")
 # query the database and put results in a dataframe
-forums <- sqlQuery(myDB, "SELECT * FROM Forums.dbo.Forum_Summary",
-  stringsAsFactors=FALSE)
+forums <- sqlQuery(myDB, "SELECT * FROM Forums.dbo.Forum_Summary", stringsAsFactors=FALSE)
 
 # make sure data is loaded as expected
 # we should have 48 forums (15 for SharePoint and 33 for SQL Server)
@@ -100,8 +102,7 @@ library(ggplot2)
 library(ggthemes)
 
 # create ggplot2 object
-ggf <- ggplot(data = forums) + labs(y = "Number of Forums", 
-  title = "SQL & SharePoint Forums")
+ggf <- ggplot(data = forums) + labs(title = "SQL & SharePoint Forums")
 
 # how many bins should be used in each graph?
 nbins <- 10
@@ -109,27 +110,37 @@ nbins <- 10
 # for each success metric
 for (ind in 4:8){
   # plot a histogram
-  print(ggf + geom_histogram(aes_string(x = colnames(forums)[ind]),
-    binwidth = diff(range(forums[,ind]))/nbins))
+  print(ggf + geom_histogram(aes_string(x = colnames(forums)[ind]), binwidth = diff(range(forums[,ind]))/nbins))
+  
+rm(ggf)
 }
 ```
 
-![plot of chunk forums.hist](figure/forums_hist1.png) ![plot of chunk forums.hist](figure/forums_hist2.png) ![plot of chunk forums.hist](figure/forums_hist3.png) ![plot of chunk forums.hist](figure/forums_hist4.png) ![plot of chunk forums.hist](figure/forums_hist5.png) 
+```
+## Error: object 'ggf' not found
+```
+
+![plot of chunk forums.hist](figure/forums_hist.png) 
 
 
-The results look normal-ish, but the small sample size gives us only a rough picture. The Avg_Votes_Per_View graph is skewed by some outliers, so let's remove the outliers and replot.
+The results look normal-ish, but the small sample size gives us only a rough picture. The vote-related graphs are skewed by some outliers, so let's remove the outliers and replot.
 
 ```r
 forums.sub <- subset(forums, Avg_Votes_Per_View < 0.001)
-gg2 <- ggplot(data = forums.sub) + labs(y = "Number of Forums", 
-  title = "SQL & SharePoint Forums")
-print(gg2 + geom_histogram(aes(x = Avg_Votes_Per_View), binwidth = 0.0001))
+gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Forums")
+gg2 + geom_histogram(aes(x = Avg_Votes_Per_View), binwidth = 0.0001)
+
+forums.sub <- subset(forums, Avg_Num_Votes < 0.75)
+gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Forums")
+gg2 + geom_histogram(aes(x = Avg_Num_Votes), binwidth = 0.05)
+
+rm(forums.sub, gg2)
 ```
 
-![plot of chunk forums.hist2](figure/forums_hist2.png) 
+![plot of chunk forums.hist2](figure/forums_hist21.png) ![plot of chunk forums.hist2](figure/forums_hist22.png) 
 
 
-What happens if we break these each into two graph -- once for each forum category?
+What happens if we break these each into two graph -- once for each forum category? How do the two forums compare?
 
 
 ```r
@@ -150,6 +161,7 @@ for (ind in 4:8){
   print(ggsp + geom_histogram(aes_string(x = colnames(forums)[ind]),
     binwidth = diff(range(forums.sp[,ind]))/nbins))
 }
+rm(ggsp, ggsql, nbins)
 ```
 
 ![plot of chunk forums.hist3](figure/forums_hist31.png) ![plot of chunk forums.hist3](figure/forums_hist32.png) ![plot of chunk forums.hist3](figure/forums_hist33.png) ![plot of chunk forums.hist3](figure/forums_hist34.png) ![plot of chunk forums.hist3](figure/forums_hist35.png) ![plot of chunk forums.hist3](figure/forums_hist36.png) ![plot of chunk forums.hist3](figure/forums_hist37.png) ![plot of chunk forums.hist3](figure/forums_hist38.png) ![plot of chunk forums.hist3](figure/forums_hist39.png) ![plot of chunk forums.hist3](figure/forums_hist310.png) 
@@ -184,12 +196,14 @@ ggplot(melt(cor.sp), aes(X1, X2, fill=value)) + geom_tile() +
 cor.sql <- cor(forums.sql[,4:22])
 ggplot(melt(cor.sql), aes(X1, X2, fill=value)) + geom_tile() + 
   fill.grad + axis.theme + labs(y="", x="", title = "SQL Forums")
+
+rm(fill_grad, axis.theme, cor.all, cor.sql, cor.sp)
 ```
 
 ![plot of chunk forums.cor](figure/forums_cor1.png) ![plot of chunk forums.cor](figure/forums_cor2.png) ![plot of chunk forums.cor](figure/forums_cor3.png) 
 
 
-To understand some of the highly correlated relationships better, let's take a look at some scatter plots, each with the success metric on the y-axis and the data points color-coded by forum category.
+That was a bad idea. Not very helpful, and most of the things that jump out are intuitively obvious. Perhaps some scatter plots (primarily with a success metric on the y-axis) and the data points color-coded by forum category will help.
 
 
 ```r
@@ -271,16 +285,30 @@ ggplot(forums, aes(y=Mean_Time_To_First_Response, x=Avg_Question_Length)) +
 ggplot(forums, aes(y=Avg_Answers, x=Num_Threads)) +
   geom_point(aes(color=Forum_Category)) +
   scale_colour_excel()
+
+rm(forums, forums.sp, forums.sql)
 ```
 
 ![plot of chunk forums.scatter](figure/forums_scatter1.png) ![plot of chunk forums.scatter](figure/forums_scatter2.png) ![plot of chunk forums.scatter](figure/forums_scatter3.png) ![plot of chunk forums.scatter](figure/forums_scatter4.png) ![plot of chunk forums.scatter](figure/forums_scatter5.png) ![plot of chunk forums.scatter](figure/forums_scatter6.png) ![plot of chunk forums.scatter](figure/forums_scatter7.png) ![plot of chunk forums.scatter](figure/forums_scatter8.png) ![plot of chunk forums.scatter](figure/forums_scatter9.png) ![plot of chunk forums.scatter](figure/forums_scatter10.png) ![plot of chunk forums.scatter](figure/forums_scatter11.png) ![plot of chunk forums.scatter](figure/forums_scatter12.png) ![plot of chunk forums.scatter](figure/forums_scatter13.png) ![plot of chunk forums.scatter](figure/forums_scatter14.png) 
 
 
-TODO: ADD OBSERVATIONS BASED ON THE SCATTER PLOTS
+My observations from looking at the above scatter plots follow. These do not reflect causation, only apparent patterns of correlation:
+
+* Approximately 2.5 contributors per thread seems to be an activity-level turning point, below which 75% or less of the questions posted will be answered, and above which 75% or more of the questions posted will be answered.
+* When it comes to answerings a higher percentage of questions posted, SQL tend to do better than SharePoint forums.
+* More posts per thread generally translates into more threads being answered. No surprise here.
+* Average first response times for the majority of SQL Server forums is are below 1.5 days. On the flip side, the majority of SharePoint forums have an average initial response time of over 3 days.
+* Even when we compare SharePoint and SQL forums of relatively the same size (in terms of the number of unique contributors during 2013), SharePoint forums are on average slower in providing an answer than are SQL forums. Maybe product complexity is a factor here?
+* SQL Server forums benefit from a higher rate of Microsoft involvement than does ShaerPoint.
+* Forums with MVPs contributing to over 40% of the threads have relatively quick average times to first answer.
+* Based on average thread views, SQL forums tend to get more traffic than SharePoint forums.
+* Based on number of threads created, seven of the top-ten largest forums are SharePoint forums.
 
 Looking at Threads
 ---------------------------
-Now that we got a high-level look at the forum level, let's drill down one level and look at threads. I'll start by loading the data from my database.
+Now that we got a high-level look at the forum level, I want to drill down a little deeper and look at thread-level data. 
+
+I'll start by loading the data from my database.
 
 
 ```r
@@ -289,6 +317,7 @@ threads <- sqlQuery(myDB, "SELECT * FROM Forums.dbo.Thread_Summary",
   stringsAsFactors=FALSE) 
 # we can close the odbc connection now
 odbcClose(myDB) 
+rm(myDB)
 
 # make sure data is loaded as expected
 # we should have 72,324 threads
@@ -324,9 +353,9 @@ colnames(threads)
 ```
 
 
-The first 13 columns are identifiers and data types that will not work well doing math (i.e. dates and booleans). Columns 14-17 are our success metrics. The remianing columns are attributes which might give us some interesting insight into what affects the success metrics.
+The first 13 columns are identifiers and data types that will not work well doing math (i.e. string, dates, and booleans). Columns 14-17 are our success metrics. The remaining columns are attributes which might give us some interesting insight into what drives the success metrics.
 
-I will also append a few columns with engineered features that will make my life a little easier later on.
+I will append a few columns to *threads* with engineered features that will make my life a little easier later on.
 
 
 ```r
@@ -562,7 +591,9 @@ ggplot(melt(cor.all), aes(X1, X2, fill=value)) + geom_tile() +
   fill.grad + axis.theme + labs(y="", x="", title = "All Threads")  
 ```
 
-![plot of chunk threads.corr](figure/threads_corr.png) 
+```
+## Error: object 'axis.theme' not found
+```
 
 
 This is useless. On to something else...
@@ -683,7 +714,6 @@ To look at the seasonality aspect, we could scrape another year of data from the
 
 The ultimate question of a thread's success is really whether or not it ever got answered. Of course we'd like to see it happen as fast as possible, but the more important thing is to see whether it was resolved at all. Let's look at the "success rate" (the ratio of threads that received an answer to the total number of threads created) in a few different slices.
 
-TODO: success rate by question/title length
 
 ```r
 # By month
@@ -718,55 +748,6 @@ ggplot(succ.ply, aes(x = factor(Num_MSFT_Posts), y = Successes/Total_Questions))
 ![plot of chunk thread.length.succ](figure/thread_length_succ1.png) ![plot of chunk thread.length.succ](figure/thread_length_succ2.png) ![plot of chunk thread.length.succ](figure/thread_length_succ3.png) ![plot of chunk thread.length.succ](figure/thread_length_succ4.png) ![plot of chunk thread.length.succ](figure/thread_length_succ5.png) ![plot of chunk thread.length.succ](figure/thread_length_succ6.png) ![plot of chunk thread.length.succ](figure/thread_length_succ7.png) 
 
 
-### SharePoint 2010 - Development and Programming
-
-The forum in the scope of my scraping with the most threads in 2013 was "SharePoint 2010 - Development and Programming." Let's make some scatter plots just focusing on this forum.
-
-
-```r
-# get the threads that are part of this largest forum
-big.forum = subset(threads, Forum_ID=="20bb4834-3140-42bb-a262-a6f1267f7fd7")
-```
-
-
-I'm wondering what impact the asker has on the successfulness of the thread. The data contains the number of points of the asker, so let's scatter than against each of the success factors. Let's use the color to encode the number of stars the asker has.
-
-
-
-```r
-# get set up
-gg.bf <- ggplot(data = big.forum) + labs(title = "SharePoint 2010 - Development and Programming") + scale_colour_excel()
-
-# scatter plot of number of answers vs. the points of the asker
-gg.bf + aes(y=jitter(Num_Answers), x=Asker_Points) + geom_point(aes(color=Asker_Type)) 
-
-# scatter plot of TTFA vs. the points of the asker
-gg.bf + aes(y=Time_To_First_Answer, x=Asker_Points) + geom_point(aes(color=Asker_Type)) 
-
-# scatter plot of TTFA vs. the points of the asker - zoomed in
-gg.bf + aes(y=Time_To_First_Answer, x=Asker_Points) +
-  geom_point(aes(color=Asker_Type)) + coord_cartesian(xlim=c(0,1000), ylim=c(0,50))
-
-# scatter plot of num votes vs. the points of the asker
-gg.bf + aes(y=jitter(Num_Votes), x=Asker_Points) + geom_point(aes(color=Asker_Type))
-
-# scatter plot of num votes per view vs. the points of the asker
-gg.bf + aes(y=Num_Votes_Per_View, x=Asker_Points) + geom_point(aes(color=Asker_Type))
-```
-
-![plot of chunk big.forum.scatter](figure/big_forum_scatter1.png) ![plot of chunk big.forum.scatter](figure/big_forum_scatter2.png) ![plot of chunk big.forum.scatter](figure/big_forum_scatter3.png) ![plot of chunk big.forum.scatter](figure/big_forum_scatter4.png) ![plot of chunk big.forum.scatter](figure/big_forum_scatter5.png) 
-
-
-These do no prove to be insightful. Too many points. 
-
-How does profile of issues where MSFT or MVP was involved differ from other threads?
-
 TODO: BUILD LINEAR MODEL OF TIME TO FIRST RESPONSE BASED ON FORUM, DATETIME, QUESTION LENGTH, TITLE LENGTH, REPUTATION OF ASKER
 
-get number of MSFT and MVP contributors on each forum. get their relative percentage of posts
-
-Possibilities for Future Exploration
----------------------------------------
-Forums are subject to social dynamics. That is, the personalities, habits, and relationships of a forum's participants play important roles in the successfulness of the forum. In future analysis, it would be interesting to dig into these relationships and ask questions like: are users more likely to answer a question if the asker helped them in the past? Does getting answers generally drive participants to 'pass it on' and give someone else an answer? Are there certain individuals who can single-handedly have a significant impact on a forum's dynamics?
-
-Being that we see significant differences between SQL Server forums and SharePoint forums, it would be insightful to better understand what's being done differently in these spaces. Talking to experts on these forums might be helpful. Also, adding other forum categories to the analysis to see how they compare would add more color. Perhaps every forum category has it's own unqiue profile, or perhaps most forums are like SQL Server forums and SharePoint forums are outlier (or vice versa).
+TODO: Build model of time to first answer based on above?
