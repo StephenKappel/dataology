@@ -81,8 +81,19 @@ As a start, I want to see how my success metrics are distributed. Is there a wid
 library(ggplot2)
 library(ggthemes)
 
+# define theme-ing to be used throughout
+my.theme <- theme(panel.grid.major = element_line(colour="#DDDDDD"),
+                  panel.background = element_rect(fill="#FFFFFF"),
+                  plot.background = element_rect(fill="#FFFFFF"),
+                  axis.text = element_text(size = rel(1.0), colour="#555555"),
+                  title = element_text(size = rel(1.2), colour="#555555"),
+                  legend.key =element_rect(fill="#FFFFFF"))
+
+my.colors <- scale_color_gdocs()
+
 # create ggplot2 object
-ggf <- ggplot(data = forums) + labs(title = "SQL & SharePoint Forums")
+ggf <- ggplot(data = forums) + labs(title = "SQL & SharePoint Forums") + 
+  my.theme + my.colors
 
 # how many bins should be used in each graph?
 nbins <- 10
@@ -90,7 +101,7 @@ nbins <- 10
 # for each success metric
 for (ind in 4:8){
   # plot a histogram
-  print(ggf + geom_histogram(aes_string(x = colnames(forums)[ind]), binwidth = diff(range(forums[,ind]))/nbins))
+  print(ggf + geom_histogram(aes_string(x = colnames(forums)[ind]), binwidth = diff(range(forums[,ind]))/nbins, fill = "grey50", colour = "grey90"))
 }
 
 rm(ggf)
@@ -99,12 +110,12 @@ rm(ggf)
 The results look normal-ish, but the small sample size gives us only a rough picture. The vote-related graphs are skewed by some outliers, so let's remove the outliers and replot.
 ```{r forums.hist2, fig.width=5.5, fig.height=4}
 forums.sub <- subset(forums, Avg_Votes_Per_View < 0.001)
-gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Forums")
-gg2 + geom_histogram(aes(x = Avg_Votes_Per_View), binwidth = 0.0001)
+gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Forums") + my.theme
+gg2 + geom_histogram(aes(x = Avg_Votes_Per_View), binwidth = 0.0001, fill = "grey50", colour = "grey90")
 
 forums.sub <- subset(forums, Avg_Num_Votes < 0.75)
-gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Forums")
-gg2 + geom_histogram(aes(x = Avg_Num_Votes), binwidth = 0.05)
+gg2 <- ggplot(data = forums.sub) + labs(title = "SQL & SharePoint Foums") + my.theme
+gg2 + geom_histogram(aes(x = Avg_Num_Votes), binwidth = 0.05, fill = "grey50", colour = "grey90")
 
 rm(forums.sub, gg2)
 ```
@@ -114,20 +125,18 @@ What happens if we break these each into two graph -- once for each forum catego
 ```{r forums.hist3, fig.width=5.5, fig.height=4}
 # create ggplot2 objects for each category
 forums.sp <- subset(forums, Forum_Category == "SharePoint")
-ggsp <- ggplot(data = forums.sp) + 
-  labs(y="Number of Forums", title = "SharePoint Forums")
+ggsp <- ggplot(data = forums.sp) + my.theme + labs(y="Number of Forums", title = "SharePoint Forums")
 forums.sql <- subset(forums, Forum_Category == "SQL Server")
-ggsql <- ggplot(data = forums.sql) +
-  labs(y="Number of Forums", title = "SQL Forums")
+ggsql <- ggplot(data = forums.sql) + my.theme + labs(y="Number of Forums", title = "SQL Forums")
 
 # for each success metric
 for (ind in 4:8){
   # plot a histogram for SQL server
   print(ggsql + geom_histogram(aes_string(x = colnames(forums)[ind]),
-    binwidth = diff(range(forums.sql[,ind]))/nbins))
+    binwidth = diff(range(forums.sql[,ind]))/nbins, fill = "grey50", colour = "grey90"))
   # plot a histogram for SharePoint server
   print(ggsp + geom_histogram(aes_string(x = colnames(forums)[ind]),
-    binwidth = diff(range(forums.sp[,ind]))/nbins))
+    binwidth = diff(range(forums.sp[,ind]))/nbins, fill = "grey50", colour = "grey90"))
 }
 rm(ggsp, ggsql, nbins)
 ```
@@ -148,17 +157,17 @@ axis.theme <- theme(axis.text.y = element_text(size=10),
 
 # across all forums
 cor.all <- cor(forums[,4:22])
-ggplot(melt(cor.all), aes(X1, X2, fill=value)) + geom_tile() + 
+ggplot(melt(cor.all), aes(X1, X2, fill=value)) + geom_tile() + my.theme + 
   fill.grad + axis.theme + labs(y="", x="", title = "All Forums")  
 
 # limit to SharePoint forums
 cor.sp <- cor(forums.sp[,4:22])
-ggplot(melt(cor.sp), aes(X1, X2, fill=value)) + geom_tile() + 
+ggplot(melt(cor.sp), aes(X1, X2, fill=value)) + geom_tile() + my.theme +  
   fill.grad + axis.theme + labs(y="", x="", title = "SharePoint Forums")
 
 # limit to SQL Server forums
 cor.sql <- cor(forums.sql[,4:22])
-ggplot(melt(cor.sql), aes(X1, X2, fill=value)) + geom_tile() + 
+ggplot(melt(cor.sql), aes(X1, X2, fill=value)) + geom_tile() + my.theme +
   fill.grad + axis.theme + labs(y="", x="", title = "SQL Forums")
 
 rm(fill_grad, cor.all, cor.sql, cor.sp)
@@ -169,82 +178,68 @@ That was a bad idea. Not very helpful, and most of the things that jump out are 
 ```{r forums.scatter, fig.width=5.5, fig.height=4}
 # scatter plot of percent threads answered vs. average number of answers per thread
 ggplot(forums, aes(y=Percent_Threads_Answered, x=Avg_Answers)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel()
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme
 
 # scatter plot of percent threads answered vs. average number of conributors per thread
 ggplot(forums, aes(y=Percent_Threads_Answered, x=Avg_Thread_Contributors)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel()
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme
 
 # scatter plot of percent threads answered vs. average number of posts per thread
 ggplot(forums, aes(y=Percent_Threads_Answered, x=Avg_Num_Posts)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel()
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme
 
 # scatter plot of mean time to first answer vs. mean time to first response
 ggplot(forums, aes(y=Mean_Time_To_First_Answer, x=Mean_Time_To_First_Response)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() + 
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,20), xlim=c(0,12)) # ignore a couple far outliers
 
 # scatter plot of mean time to first answer vs. number of unique contributors
 ggplot(forums, aes(y=Mean_Time_To_First_Answer, x=Num_Unique_Contributors)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,20)) # ignore a couple far outliers
 
 # scatter plot of average number of answers per thread vs. average number of thread contributors
 ggplot(forums, aes(y=Avg_Answers, x=Avg_Thread_Contributors)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel()
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme
 
 # scatter plot of mean time to first answer vs. percent thread with MSFT involvement
 ggplot(forums, aes(y=Mean_Time_To_First_Answer, x=Percent_Threads_With_MSFT)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,20), xlim=c(0,0.20)) # ignore a couple far outliers
 
 # scatter plot of mean time to first answer vs. percent thread with MVP involvement
 ggplot(forums, aes(y=Mean_Time_To_First_Answer, x=Percent_Threads_With_MVP)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,20), xlim=c(0,0.80)) # ignore a couple far outliers
 
 # scatter plot of average number of votes per thread vs. percent thread with MSFT involvement
 ggplot(forums, aes(y=Avg_Num_Votes, x=Percent_Threads_With_MSFT)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,0.75), xlim=c(0,0.30)) # ignore a couple far outliers
 
 # scatter plot of average number of votes per thread vs. average number of views per thread
 ggplot(forums, aes(y=Avg_Num_Votes, x=Avg_Num_Views)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,0.75), xlim=c(500,1500)) # ignore a couple far outliers
 
 # scatter plot of number of threads vs. mean time to first answer
 ggplot(forums, aes(y=Mean_Time_To_First_Answer, x=Num_Threads)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,20)) # ignore a couple far outliers
 
 # scatter plot of number of threads vs. mean time to first answer
 ggplot(forums, aes(y=Mean_Time_To_First_Response, x=Num_Threads)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,15)) # ignore a couple far outliers
 
 # scatter plot of number of threads vs. mean time to first answer
 ggplot(forums, aes(y=Mean_Time_To_First_Response, x=Avg_Question_Length)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel() +
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme +
   coord_cartesian(ylim=c(0,15)) # ignore a couple far outliers
 
 # scatter plot of number of threads vs. mean time to first answer
 ggplot(forums, aes(y=Avg_Answers, x=Num_Threads)) +
-  geom_point(aes(color=Forum_Category)) +
-  scale_colour_excel()
+  geom_point(aes(color=Forum_Category)) + my.colors + my.theme
 
 rm(forums, forums.sp, forums.sql)
 ```
@@ -295,6 +290,9 @@ threads$Question_Length_Group <- floor(threads$Question_Length/40) * 40 + 20
 
 # round time to first reply to the nearest day
 threads$TTFR_Group <- floor(threads$Time_To_First_Reply + 0.5)
+
+# group asker points into groups, with one group per 100 points
+threads$Asker_Points_Group <- floor(threads$Asker_Points/100) * 100 + 50
 ```
 
 ### Success Factor Distributions
@@ -303,43 +301,57 @@ Let's see how the success metrics are distributed at the thread level.
 
 ```{r threads.hist.success, fig.width=5.5, fig.height=4}
 # create ggplot2 object
-ggt <- ggplot(data = threads) + labs(title = "SQL & SharePoint Threads")
+ggt <- ggplot(data = threads) + labs(title = "SQL & SharePoint Threads") + my.theme
 
 # Num_Answers histogram
-ggt + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
+ggt + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1, fill = "grey50", colour = "grey90") +
+  coord_cartesian(xlim=c(0,8)) + labs(x="Number of Answers")
 
 # Time_To_First_Answer histogram
-ggt + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
+ggt + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,30)) + labs(x="Time to First Answer (days)")
 
 # Num_Votes histogram
-ggt + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
+ggt + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1, fill = "grey50", colour = "grey90") +
+  coord_cartesian(xlim=c(0,10)) + labs(x="Number of Votes")
 
 # Num_Votes_Per_View histogram
-ggt + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
+ggt + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE, fill = "grey50", colour = "grey90") +
+  coord_cartesian(xlim=c(0,0.005)) +labs(x="Number of Votes per View")
 ```
 
 That's an interesting double-peak in Time_To_First_Answer. Is that because we're mixing SQL and SharePoint? Let's take a look both forum categories side-by-side.
 
 ```{r threads.hist.success.sql.sp, fig.width=5.5, fig.height=4}
 # create ggplot2 objects
-ggt.sql <- ggplot(data = subset(threads, Forum_Category == "SQL Server")) + labs(title = "SQL Forums")
-ggt.sp <- ggplot(data = subset(threads, Forum_Category == "SharePoint")) + labs(title = "SharePoint Forums")
+ggt.sql <- ggplot(data = subset(threads, Forum_Category == "SQL Server")) + 
+  labs(title = "SQL Forums") + my.theme
+ggt.sp <- ggplot(data = subset(threads, Forum_Category == "SharePoint")) + 
+  labs(title = "SharePoint Forums") + my.theme
 
 # Num_Answers histograms
-ggt.sql + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
-ggt.sp + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
+ggt.sql + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,8)) + labs(x="Number of Answers")
+ggt.sp + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,8)) + labs(x="Number of Answers")
 
 # Time_To_First_Answer histogram
-ggt.sql + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
-ggt.sp + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
+ggt.sql + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  labs(x="Time to First Answer (days)") + coord_cartesian(xlim=c(0,30))
+ggt.sp + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  labs(x="Time to First Answer (days)") + coord_cartesian(xlim=c(0,30))
 
 # Num_Votes histogram
-ggt.sql + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
-ggt.sp + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
+ggt.sql + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  labs(x="Number of Votes") + coord_cartesian(xlim=c(0,10))
+ggt.sp + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  labs(x="Number of Votes") + coord_cartesian(xlim=c(0,10))
 
 # Num_Votes_Per_View histogram
-ggt.sql + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
-ggt.sp + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
+ggt.sql + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  labs(x="Number of Votes per View") + coord_cartesian(xlim=c(0,0.005))
+ggt.sp + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  labs(x="Number of Votes per View") + coord_cartesian(xlim=c(0,0.005))
 ```
 
 That doesn't answer the double-peak question, but I do have a couple quick observations:
@@ -351,8 +363,8 @@ If the double-peak isn't caused by the different types of forums, could it be in
 ```{r threads.ttfa.day, fig.width=5.5, fig.height=4}
 for (day in 1:7)
 {
-  print(ggplot(data = subset(threads, Created_Week_Day == day)) + labs(title = paste("Day ", as.character(day))) + 
-  geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,6)))
+  print(ggplot(data = subset(threads, Created_Week_Day == day)) + labs(title = paste("Day ", as.character(day)), x="Time to First Answer (days)") + 
+  geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE, fill = "grey50", colour = "grey90") + coord_cartesian(xlim=c(0,6)) + my.theme)
 }
 ```
 
@@ -362,59 +374,72 @@ Ah, yes. That's it. The days with the highest volume (Monday through Thursday) a
 
 Out of curiousity, I'd also like to see the distribution of the question/title length attributes and the time of the post attributes. These are things that are known immediately when a thread is posted, so they could be good inputs for a prediction model.
 
-```{r threads.hist.other, fig.width=6, fig.height=4}
+```{r threads.hist.other, fig.width=5.5, fig.height=4}
 # Title_Length density plot
-ggt + geom_density(aes(x = Title_Length)) + coord_cartesian(xlim=c(0,250))
+ggt + geom_density(aes(x = Title_Length), fill = "grey50", colour = "grey90") + coord_cartesian(xlim=c(0,250)) +
+  labs(x="Title Length (in characters)")
 
 # Question_Length density plot
-ggt + geom_density(aes(x = Question_Length)) + coord_cartesian(xlim=c(0,5000))
+ggt + geom_density(aes(x = Question_Length), fill = "grey50", colour = "grey90") + coord_cartesian(xlim=c(0,5000)) +
+  labs(x="Question Length (in characters)")
 
 # Created_Week_Day bar chart
-ggt + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1)
+ggt + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1, fill = "grey50", colour = "grey90") +
+  labs(x="Created Week Day (0 = Sunday)")
 
 # Created_Month bar chart 
-ggt + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1)
+ggt + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1, fill = "grey50", colour = "grey90") +
+  labs(x="Created Month (1 = January)")
 
 # Created_Hour bar chart
-ggt + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1)
+ggt + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1, fill = "grey50", colour = "grey90") +
+  labs(x="Created Hour (0 = 12 AM GMT)")
 ```
 
 And, let's see the distributions of threads based on the number of posts made by Microsft, MVPs, and partners.
 
-```{r threads.hist.part, fig.width=6, fig.height=4}
+```{r threads.hist.part, fig.width=5.5, fig.height=4}
 # MSFT histogram
-ggt + geom_bar(aes(x = as.factor(Num_MSFT_Posts)), binwidth=1)
+ggt + geom_bar(aes(x = as.factor(Num_MSFT_Posts)), binwidth=1, fill = "grey50", colour = "grey90") +
+  labs(x = "Number of Microsoft Posts")
 
 # MSFT histogram without zero
-ggt + geom_bar(aes(x = as.factor(Num_MSFT_Posts)), binwidth=1) + coord_cartesian(xlim=c(1.5,10), ylim=c(0,3000))
+ggt + geom_bar(aes(x = as.factor(Num_MSFT_Posts)), binwidth=1, fill = "grey50", colour = "grey90") + coord_cartesian(xlim=c(1.5,10), ylim=c(0,3000)) + labs(x = "Number of Microsoft Posts")
 
 # MVP histogram
-ggt + geom_bar(aes(x = as.factor(Num_MVP_Posts)), binwidth=1) + coord_cartesian(xlim=c(0,11.5))
+ggt + geom_bar(aes(x = as.factor(Num_MVP_Posts)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,11.5)) + labs(x = "Number of MVP Posts")
 
 # MVP histogram without zero
-ggt + geom_bar(aes(x = as.factor(Num_MVP_Posts)), binwidth=1) + coord_cartesian(xlim=c(1.5,11.5), ylim=c(0,15000))
+ggt + geom_bar(aes(x = as.factor(Num_MVP_Posts)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(1.5,11.5), ylim=c(0,15000)) + labs(x = "Number of MVP Posts")
 
 # Partner histogram
-ggt + geom_bar(aes(x = as.factor(Num_Partner_Posts)), binwidth=1) + coord_cartesian(xlim=c(0,11.5))
+ggt + geom_bar(aes(x = as.factor(Num_Partner_Posts)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,11.5)) + labs(x = "Number of Partner Posts")
 
 # Partner histogram without zero
-ggt + geom_bar(aes(x = as.factor(Num_Partner_Posts)), binwidth=1) + coord_cartesian(xlim=c(1.5,11.5), ylim=c(0,25000))
+ggt + geom_bar(aes(x = as.factor(Num_Partner_Posts)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(1.5,11.5), ylim=c(0,25000)) + labs(x = "Number of Partner Posts")
 ```
 
 Almost there... Here are the distributions of a few remaining, potentially interesting attributes.
 
-```{r threads.hist.other2, fig.width=6, fig.height=4}
+```{r threads.hist.other2, fig.width=5.5, fig.height=4}
 # asker points
-ggt + geom_density(aes(x = Asker_Points)) + coord_cartesian(xlim=c(0,2000))
+ggt + geom_density(aes(x = Asker_Points), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,2000)) + labs(x="Asker Points (at time of scraping)")
 
 # subscribers
-ggt + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1) + coord_cartesian(xlim=c(0,8.5))
+ggt + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,8.5)) + labs(x="Number of Subscribers")
 
 # views
-ggt + geom_density(aes(x = Num_Views)) + coord_cartesian(xlim=c(0,4000))
+ggt + geom_density(aes(x = Num_Views), fill = "grey50", colour = "grey90") + coord_cartesian(xlim=c(0,4000)) + labs(x="Number of Views")
 
 # TTFR
-ggt + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE) + coord_cartesian(xlim=c(0,10))
+ggt + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,10)) + labs(x="Time to First Reply (in days)")
 ```
 
 ### Microsoft Involvement
@@ -424,60 +449,82 @@ If I worked at Microsoft, I'd want to know how when employees are getting involv
 ```{r threads.msft, fig.width=5.5, fig.height=4}
 
 # create ggplot2 object for only MSFT-involved threads
-ggt.msft <- ggplot(data = subset(threads, Num_MSFT_Posts > 0)) + labs(title = "Threads with MSFT Engagement")
-ggt.not.msft <- ggplot(data = subset(threads, Num_MSFT_Posts == 0)) + labs(title = "Threads without MSFT Engagement")
+ggt.msft <- ggplot(data = subset(threads, Num_MSFT_Posts > 0)) + 
+  my.theme + labs(title = "Threads with MSFT Engagement")
+ggt.not.msft <- ggplot(data = subset(threads, Num_MSFT_Posts == 0)) + 
+  my.theme + labs(title = "Threads without MSFT Engagement")
 
 # Num_Answers histogram
-ggt.msft + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
-ggt.not.msft + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1) + coord_cartesian(xlim=c(0,8))
+ggt.msft + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,8)) + labs(x="Number of Answers")
+ggt.not.msft + geom_bar(aes(x = as.factor(Num_Answers)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,8)) + labs(x="Number of Answers")
 
 # Time_To_First_Answer histogram
-ggt.msft + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
-ggt.not.msft + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE) + coord_cartesian(xlim=c(0,30))
+ggt.msft + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,30)) + labs(x="Time to First Answer (days)")
+ggt.not.msft + geom_density(aes(x = Time_To_First_Answer), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,30)) + labs(x="Time to First Answer (days)")
 
 # Num_Votes histogram
-ggt.msft + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
-ggt.not.msft + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1) + coord_cartesian(xlim=c(0,10))
+ggt.msft + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,10)) + labs(x="Number of Votes")
+ggt.not.msft + geom_bar(aes(x = as.factor(Num_Votes)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,10)) + labs(x="Number of Votes")
 
 # Title_Length density plot
-ggt.msft + geom_density(aes(x = Title_Length)) + coord_cartesian(xlim=c(0,250))
-ggt.not.msft + geom_density(aes(x = Title_Length)) + coord_cartesian(xlim=c(0,250))
+ggt.msft + geom_density(aes(x = Title_Length), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,250)) + labs(x="Title Length (in characters)")
+ggt.not.msft + geom_density(aes(x = Title_Length), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,250)) + labs(x="Title Length (in characters)")
 
 # Question_Length density plot
-ggt.msft + geom_density(aes(x = Question_Length)) + coord_cartesian(xlim=c(0,5000))
-ggt.not.msft + geom_density(aes(x = Question_Length)) + coord_cartesian(xlim=c(0,5000))
+ggt.msft + geom_density(aes(x = Question_Length), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,5000)) + labs(x="Question Length (in characters)")
+ggt.not.msft + geom_density(aes(x = Question_Length), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,5000)) + labs(x="Question Length (in characters)")
 
 # Created_Week_Day bar chart
-ggt.msft + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1)
-ggt.not.msft + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1)
+ggt.msft + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1, fill = "grey50", colour = "grey90") + labs(x="Created Week Day (0 = Sunday)")
+ggt.not.msft + geom_bar(aes(x = as.factor(Created_Week_Day)), binwidth=1, fill = "grey50", colour = "grey90") + labs(x="Created Week Day (0 = Sunday)")
 
 # Created_Month bar chart 
-ggt.msft + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1)
-ggt.not.msft + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1)
+ggt.msft + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1, fill = "grey50", colour = "grey90") + labs(x="Created Month (1 = January)")
+ggt.not.msft + geom_bar(aes(x = as.factor(Created_Month)), binwidth=1, fill = "grey50", colour = "grey90") + labs(x="Created Month (1 = January)")
 
 # Created_Hour bar chart
-ggt.msft + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1)
-ggt.not.msft + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1)
+ggt.msft + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1, fill = "grey50", colour = "grey90") + labs(x="Created Hour (0 = 12 AM GMT)")
+ggt.not.msft + geom_bar(aes(x = as.factor(Created_Hour)), binwidth=1, fill = "grey50", colour = "grey90") + labs(x="Created Hour (0 = 12 AM GMT)")
 
 # Num_Votes_Per_View histogram
-ggt.msft + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
-ggt.not.msft + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE) + coord_cartesian(xlim=c(0,0.005))
+ggt.msft + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,0.005)) + labs(x="Number of Votes per View")
+ggt.not.msft + geom_density(aes(x = Num_Votes_Per_View), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,0.005)) + labs(x="Number of Votes per View")
 
 # asker points
-ggt.msft + geom_density(aes(x = Asker_Points)) + coord_cartesian(xlim=c(0,2000))
-ggt.not.msft + geom_density(aes(x = Asker_Points)) + coord_cartesian(xlim=c(0,2000))
+ggt.msft + geom_density(aes(x = Asker_Points), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,2000)) + labs(x="Asker Points (at time of scraping)")
+ggt.not.msft + geom_density(aes(x = Asker_Points), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,2000)) + labs(x="Asker Points (at time of scraping)")
 
 # subscribers
-ggt.msft + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1) + coord_cartesian(xlim=c(0,8.5))
-ggt.not.msft + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1) + coord_cartesian(xlim=c(0,8.5))
+ggt.msft + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,8.5)) + labs(x="Number of Subscribers")
+ggt.not.msft + geom_bar(aes(x = as.factor(Num_Subscribers)), binwidth=1, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,8.5)) + labs(x="Number of Subscribers")
 
 # views
-ggt.msft + geom_density(aes(x = Num_Views)) + coord_cartesian(xlim=c(0,4000))
-ggt.not.msft + geom_density(aes(x = Num_Views)) + coord_cartesian(xlim=c(0,4000))
+ggt.msft + geom_density(aes(x = Num_Views), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,4000)) + labs(x="Number of Views")
+ggt.not.msft + geom_density(aes(x = Num_Views), fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,4000)) + labs(x="Number of Views")
 
 # TTFR
-ggt.msft + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE) + coord_cartesian(xlim=c(0,10))
-ggt.not.msft + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE) + coord_cartesian(xlim=c(0,10))
+ggt.msft + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,10)) + labs(x="Time to First Reply (days)")
+ggt.not.msft + geom_density(aes(x = Time_To_First_Reply), na.rm = TRUE, fill = "grey50", colour = "grey90") + 
+  coord_cartesian(xlim=c(0,10)) + labs(x="Time to First Reply (days)")
 
 rm(ggt.msft, ggt.not.msft)
 ```
@@ -493,7 +540,7 @@ The most obvious differences between Microsoft-involved threads and the rest of 
 ```{r threads.corr, fig.width=8, fig.height=7}
 # across all threads
 cor.all <- cor(threads[,14:47], use="pairwise.complete.obs")
-ggplot(melt(cor.all), aes(X1, X2, fill=value)) + geom_tile() + 
+ggplot(melt(cor.all), aes(X1, X2, fill=value)) + geom_tile() + my.theme + 
   fill.grad + axis.theme + labs(y="", x="", title = "All Threads")  
 
 rm(cor.all, axis.theme)
@@ -580,9 +627,9 @@ Is it possible that other factors played a role in the responsiveness improvemen
 msft.ply <- ddply(threads, "Created_Month", summarise, Total_MSFT_Posts = sum(Num_MSFT_Posts), 
   Total_Posts = sum(Num_Posts))
 
-gg.msft <- ggplot(msft.ply, aes(x = factor(Created_Month))) + 
-  labs(title="SQL & SharePoint Threads", x="Thread Created Month") + 
-  geom_bar(stat = "identity")
+gg.msft <- ggplot(msft.ply, aes(x = factor(Created_Month))) + my.theme +
+  labs(title="SQL & SharePoint Threads", x="Created Month (January = 1)") + 
+  geom_bar(stat = "identity", fill = "grey50", colour = "grey90")
 
 gg.msft + aes(y = Total_MSFT_Posts) + labs(y="Number of MSFT Posts") 
 gg.msft + aes(y = Total_MSFT_Posts/Total_Posts) + labs(y="MSFT Posts as Percent of Total Posts")
@@ -592,9 +639,9 @@ gg.msft + aes(y = Total_MSFT_Posts/Total_Posts) + labs(y="MSFT Posts as Percent 
 mvp.ply <- ddply(threads, "Created_Month", summarise, Total_MVP_Posts = sum(Num_MVP_Posts), 
   Total_Posts = sum(Num_Posts))
 
-gg.mvp <- ggplot(mvp.ply, aes(x = factor(Created_Month))) + 
-  labs(title="SQL & SharePoint Threads", x="Thread Created Month") + 
-  geom_bar(stat = "identity")
+gg.mvp <- ggplot(mvp.ply, aes(x = factor(Created_Month))) + my.theme + 
+  labs(title="SQL & SharePoint Threads", x="Created Month (January = 1)") + 
+  geom_bar(stat = "identity", fill = "grey50", colour = "grey90")
 
 gg.mvp + aes(y = Total_MVP_Posts) + labs(y="Number of MVP Posts")
 gg.mvp + aes(y = Total_MVP_Posts/Total_Posts) + labs(y="MVP Posts as Percent of Total Posts")
@@ -604,9 +651,9 @@ gg.mvp + aes(y = Total_MVP_Posts/Total_Posts) + labs(y="MVP Posts as Percent of 
 part.ply <- ddply(threads, "Created_Month", summarise, Total_Partner_Posts = sum(Num_Partner_Posts), 
   Total_Posts = sum(Num_Posts))
 
-gg.part <- ggplot(part.ply, aes(x = factor(Created_Month))) + 
-  labs(title="SQL & SharePoint Threads", x="Thread Created Month") + 
-  geom_bar(stat = "identity")
+gg.part <- ggplot(part.ply, aes(x = factor(Created_Month))) + my.theme + 
+  labs(title="SQL & SharePoint Threads", x="Created Month (January = 1)") + 
+  geom_bar(stat = "identity", fill = "grey50", colour = "grey90")
 
 gg.part + aes(y = Total_Partner_Posts) + labs(y="Number of Partner Posts")
 gg.part + aes(y = Total_Partner_Posts/Total_Posts) + labs(y="Partner Posts as Percent of Total Posts")
@@ -626,40 +673,179 @@ The ultimate question of a thread's success is really whether or not it ever got
 ```{r thread.length.succ, fig.width=5.5, fig.height=4}
 # By month
 succ.ply <- ddply(threads, "Created_Month", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Created_Month), y = Successes/Total_Questions)) + 
-  labs(title="SQL & SharePoint Threads", x="Thread Created Month", y="Success Rate") + geom_point()
+ggplot(succ.ply, aes(x = factor(Created_Month), y = Successes/Total_Questions)) + my.theme +
+  labs(title="SQL & SharePoint Threads", x="Created Month (1 = January)", y="Success Rate") + geom_point()
 
 # By week day
 succ.ply <- ddply(threads, "Created_Week_Day", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Created_Week_Day), y = Successes/Total_Questions)) + 
-  labs(title="SQL & SharePoint Threads", x="Thread Created Week Day", y="Success Rate") + geom_point()
+ggplot(succ.ply, aes(x = factor(Created_Week_Day), y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", x="Created Week Day (0 = Sunday)", y="Success Rate") + geom_point()
 
 # By time of day
 succ.ply <- ddply(threads, "Created_Hour", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Created_Hour), y = Successes/Total_Questions)) + 
-  labs(title="SQL & SharePoint Threads", x="Thread Created Hour", y="Success Rate") + geom_point()
+ggplot(succ.ply, aes(x = factor(Created_Hour), y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", x="Created Hour (0 = 12 AM GMT)", y="Success Rate") + geom_point()
 
 # By title length
 succ.ply <- ddply(threads, "Title_Length_Group", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = Title_Length_Group, y = Successes/Total_Questions)) + 
-  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0,130), ylim=c(0.5, 1))
+ggplot(succ.ply, aes(x = Title_Length_Group, y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Title Length (in characters)") +
+  geom_point() + coord_cartesian(xlim=c(0,130), ylim=c(0.5, 1))
 
 # By question length
 succ.ply <- ddply(threads, "Question_Length_Group", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = Question_Length_Group, y = Successes/Total_Questions)) + 
-  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0,2100), ylim=c(0.5, 1))
+ggplot(succ.ply, aes(x = Question_Length_Group, y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Question Length (in characters)") +
+  geom_point() + coord_cartesian(xlim=c(0,2100), ylim=c(0.5, 1))
+
+# By Asker Stars
+succ.ply <- ddply(threads, "Asker_Stars", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
+ggplot(succ.ply, aes(x = factor(Asker_Stars), y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Asker Stars (at time of scraping)") + geom_point() + coord_cartesian( ylim=c(0.5, 1))
+
+# By Asker Points
+succ.ply <- ddply(threads, "Asker_Points_Group", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
+ggplot(succ.ply, aes(x = Asker_Points_Group, y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Asker Points (at time of scraping)") +
+  geom_point() + coord_cartesian( ylim=c(0, 1), xlim=c(0,1000))
 
 # By TTFR
 succ.ply <- ddply(threads, "TTFR_Group", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = TTFR_Group, y = Successes/Total_Questions)) + 
-  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(-0.5,20.5), ylim=c(0, 1))
+ggplot(succ.ply, aes(x = TTFR_Group, y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Time To First Response (days)") +
+  geom_point() + coord_cartesian(xlim=c(-0.5,20.5), ylim=c(0, 1))
 
 # By MSFT posts
 succ.ply <- ddply(threads, "Num_MSFT_Posts", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
-ggplot(succ.ply, aes(x = factor(Num_MSFT_Posts), y = Successes/Total_Questions)) + 
-  labs(title="SQL & SharePoint Threads", y="Success Rate") + geom_point() + coord_cartesian(xlim=c(0.5,5.5), ylim=c(0, 1))
+ggplot(succ.ply, aes(x = factor(Num_MSFT_Posts), y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Number of Microsoft Posts") +
+  geom_point() + coord_cartesian(xlim=c(0.5,5.5), ylim=c(0, 1))
 
 rm(succ.ply)
 ```
 
 These graphs reveal much the same as our earlier graphs. More success is seen for questions posted later in the year and on weekends. Shorter title and questions get better results than longer ones. Here is one last insightful morsel, though: If an issue gets an initial reply during the first five days, it is about 75% likely to eventually get resolved successfully. But, as each day after the 5-day mark passes, the question gets less and less likely to receive a successful answer. By day 10, the likelihood of a successful resolution is only about 50%. 
+
+### Modeling Success
+
+Now that the high-level patterns in the data have been explored, I want to use some of that insight to build a model. In particular, I want to build a decision tree that will allow us to  gaugue the probability a post will be successfully resolved. And, I want to make this predicition based only on the attributes that I know immediately when the question is first posted. Theoretically, something like this could be used to identify weak posts and either (1) give feedback/suggestions to the poster or (2) alert Microsoft to give attention to these questions early.
+
+I will start by preparing the data, making all relavant into categorical data.
+
+```{r tree.prep}
+# create new data.frame that will just have the columns desired for the tree model
+tree.threads <- data.frame(Thread_ID = threads$Thread_ID)
+
+# add the 'label' column, indicating success or failure
+tree.threads$Success <- ceiling(threads$Num_Answers/100)
+
+# add a TTFA column as another potential label
+tree.threads$Time_To_First_Answer <- threads$Time_To_First_Answer
+
+# add columns for date/time data
+tree.threads$Created_Month <- factor(threads$Created_Month)
+tree.threads$Created_Week_Day <- factor(threads$Created_Week_Day)
+tree.threads$Created_Hour <- factor(threads$Created_Hour)
+
+# add columns for question and title lengths
+tree.threads$Question_Length <- floor(threads$Question_Length/200)
+tree.threads$Question_Length <- factor(sapply(tree.threads$Question_Length, function(x) min(x, 5)))
+tree.threads$Title_Length <- floor(threads$Title_Length/25)
+tree.threads$Title_Length <- factor(sapply(tree.threads$Title_Length, function(x) min(x, 5)))
+
+# add forum attributes
+tree.threads$Forum_Category <- factor(threads$Forum_Category)
+tree.threads$Forum_Name <- factor(threads$Forum_Name)
+
+# add asker attributes
+tree.threads$Asker_Stars <- factor(threads$Asker_Stars)
+tree.threads$Asker_Type <- factor(threads$Asker_Type)
+tree.threads$Asker_Points <- floor((threads$Asker_Points + 199)/200)
+tree.threads$Asker_Points <- factor(sapply(tree.threads$Asker_Points, function(x) min(x, 6)))
+
+```
+
+To break the data into training and test sets, I will exploit the fact that each thread has an ID that is a randomly generated GUID.
+
+```{r data.split}
+# the training set has IDs beginning with a number
+tree.threads.train <- subset(tree.threads, !is.na(as.numeric(substr(Thread_ID,1,1))))
+nrow(tree.threads.train)
+
+# the test set has IDs beginning with a letter d or later
+tree.threads.test <- subset(tree.threads, is.na(as.numeric(substr(Thread_ID,1,1))))
+nrow(tree.threads.test)
+```
+
+Ok. Now it's time to train the model. I will use the *party* package to fit a regression tree.
+
+```{r success.tree, fig.width=5.5, fig.height=4}
+library(party)
+
+# fit the tree
+success.tree <- ctree(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Forum_Name + Asker_Stars + Asker_Type + Asker_Points, data = tree.threads.train)
+
+# use the model to calculate success probabilities for each test example
+tree.threads.test$prediction <- Predict(success.tree, tree.threads.test)
+
+# group predictions into 4% ranges
+tree.threads.test$prediction_range <- ceiling(tree.threads.test$prediction * 25.0) / 25.0 - 0.02
+
+# aggregate by the 5% ranges to see how the predictions compared to the results
+succ.ply <- ddply(tree.threads.test, "prediction_range", summarise, Total_Questions = length(Success), Successes = sum(Success))
+succ.ply
+
+# plot the performance of the model on the test data
+ggplot(succ.ply, aes(x = as.numeric(prediction_range), y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Actual Success Rate", x="Predicted Success Rate") + geom_point() + 
+  coord_cartesian(xlim=c(0.15, 1), ylim=c(0.15, 1))
+```
+
+Not too bad. This model gives us reasonable indicators of how likely a question is to be answered. Let's dig into the model to see if we can gain an intuitive understanding of how it is making these predictions. I'll spare you the graphic here, but there are 41 terminal nodes, with up to six decision points before we come to a conclusion. The predictors used in the model and the number of times they are used:
+
+* 11 Question_Length
+* 9 Forum_Name
+* 7 Created_Month
+* 6 Title_Length
+* 5 Forum_Category
+* 1 Asker_Stars
+* 1 Asker_Points
+
+So it seem that the key factors influencing success are the length of the title/question, the forum to which it was posted, and the time of year. Notably weak or missing predictors are the time of day, day of week, and credentials of the asker.
+
+While it will surely have a negative impact on the granularity provided by the model, let's remove Forum_Name and see if that shrinks the tree to a more interpretable level.
+
+```{r success.tree2, fig.width=5.5, fig.height=4}
+# fit the tree
+success.tree <- ctree(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points, data = tree.threads.train)
+
+# use the model to calculate success probabilities for each test example
+tree.threads.test$prediction <- Predict(success.tree, tree.threads.test)
+
+# group predictions into 4% ranges
+tree.threads.test$prediction_range <- ceiling(tree.threads.test$prediction * 25.0) / 25.0 - 0.02
+
+# aggregate by the 5% ranges to see how the predictions compared to the results
+succ.ply <- ddply(tree.threads.test, "prediction_range", summarise, Total_Questions = length(Success), Successes = sum(Success))
+succ.ply
+
+# plot the performance of the model on the test data
+ggplot(succ.ply, aes(x = as.numeric(prediction_range), y = Successes/Total_Questions))+ my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Actual Success Rate", x="Predicted Success Rate") + 
+  geom_point() + coord_cartesian(xlim=c(0.15, 1), ylim=c(0.15, 1))
+```
+
+This tree is a little more readable, so let's take a look.
+
+```{r success.tree.diagram, fig.width=11, fig.height=9}
+# view the tree
+plot(success.tree)
+
+rm(success.tree, succ.ply, tree.threads, tree.threads.train, tree.threads.test)
+```
+
+The results here confirm our obserations from the more complex tree. We see that the first two splits are based on Question_Length and Forum_Category. Question_Length continues to play a role in many further splits and Created_Month figures prominently.
+
+With fewer terminal nodes, the simpler model gives us fewer predictions with low probabilities. In fact, it has no predictions with a probability as low as 50%. The more complicated model had over 1,700 predictions in the test set with 50% probability or less. This appears to be evidence of under-fitting.
+
+Unfortuantely, even the more complex tree does not yield a high percentage of points with less that 50% probability. So, while we are able to look at questions with less than 70% success probablity and know these are more likely to not get answered than questions with 90% success probability, there is still a lot of room left for providing further granularity. This isn't surprising considering the small number of predictors we are considering. Text analysis will probably be needed to significantly improve the performance of this model.
