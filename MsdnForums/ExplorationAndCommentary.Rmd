@@ -721,14 +721,24 @@ ggplot(succ.ply, aes(x = factor(Num_MSFT_Posts), y = Successes/Total_Questions))
   labs(title="SQL & SharePoint Threads", y="Success Rate", x="Number of Microsoft Posts") +
   geom_point() + coord_cartesian(xlim=c(0.5,5.5), ylim=c(0, 1))
 
+# By Questions with Code
+succ.ply <- ddply(threads, "Question_Has_Code", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
+ggplot(succ.ply, aes(x = factor(Question_Has_Code), y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Question Has Code (1 = Yes)") +
+  geom_point() + coord_cartesian(xlim=c(0.5, 2.5), ylim=c(0, 1))
+
 rm(succ.ply)
 ```
 
 These graphs reveal much the same as our earlier graphs. More success is seen for questions posted later in the year and on weekends. Shorter title and questions get better results than longer ones. Here is one last insightful morsel, though: If an issue gets an initial reply during the first five days, it is about 75% likely to eventually get resolved successfully. But, as each day after the 5-day mark passes, the question gets less and less likely to receive a successful answer. By day 10, the likelihood of a successful resolution is only about 50%. 
 
+I am surprised to see that a question with code in the question are less likely to be answered. It was my intuition that questions that have code would be more likely to be answered because they are more reproducable and less likely to be overly vague. Perhaps the truth is that problems involving code are more likely to be complex and therefore are less likely to be answered.
+
 ### Modeling Success
 
-Now that the high-level patterns in the data have been explored, I want to use some of that insight to build a model. In particular, I want to build a decision tree that will allow us to  gaugue the probability a post will be successfully resolved. And, I want to make this predicition based only on the attributes that I know immediately when the question is first posted. Theoretically, something like this could be used to identify weak posts and either (1) give feedback/suggestions to the poster or (2) alert Microsoft to give attention to these questions early.
+Now that the high-level patterns in the data have been explored, I want to use some of that insight to build a model to gaugue the probability a post will be successfully resolved. And, I want to make this predicition based only on the attributes that I know immediately when the question is first posted. Theoretically, something like this could be used to identify weak posts and either (1) give feedback/suggestions to the poster or (2) alert Microsoft to give attention to these questions early.
+
+To start, I will use a regression tree, as the results of this model should be interpretable and may provide further insight into drivers of thread success.
 
 I will start by preparing the data, making all relavant into categorical data.
 
@@ -762,6 +772,9 @@ tree.threads$Asker_Stars <- factor(threads$Asker_Stars)
 tree.threads$Asker_Type <- factor(threads$Asker_Type)
 tree.threads$Asker_Points <- floor((threads$Asker_Points + 199)/200)
 tree.threads$Asker_Points <- factor(sapply(tree.threads$Asker_Points, function(x) min(x, 6)))
+
+# add whehter or not the question contained code
+tree.threads$Question_Has_Code <- factor(threads$Question_Has_Code)
 
 ```
 
@@ -817,7 +830,7 @@ While it will surely have a negative impact on the granularity provided by the m
 
 ```{r success.tree2, fig.width=5.5, fig.height=4}
 # fit the tree
-success.tree <- ctree(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points, data = tree.threads.train)
+success.tree <- ctree(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points + Question_Has_Code, data = tree.threads.train)
 
 # use the model to calculate success probabilities for each test example
 tree.threads.test$prediction <- Predict(success.tree, tree.threads.test)
@@ -849,3 +862,121 @@ The results here confirm our obserations from the more complex tree. We see that
 With fewer terminal nodes, the simpler model gives us fewer predictions with low probabilities. In fact, it has no predictions with a probability as low as 50%. The more complicated model had over 1,700 predictions in the test set with 50% probability or less. This appears to be evidence of under-fitting.
 
 Unfortuantely, even the more complex tree does not yield a high percentage of points with less that 50% probability. So, while we are able to look at questions with less than 70% success probablity and know these are more likely to not get answered than questions with 90% success probability, there is still a lot of room left for providing further granularity. This isn't surprising considering the small number of predictors we are considering. Text analysis will probably be needed to significantly improve the performance of this model.
+
+Next, let's try another less interpretable model -- a logit regression.
+
+```{r logit.prep}
+# create new data.frame that will just have the columns desired for the logit model
+logit.threads <- data.frame(Thread_ID = threads$Thread_ID)
+
+# add the 'label' column, indicating success or failure
+logit.threads$Success <- ceiling(threads$Num_Answers/100)
+
+# add a TTFA column as another potential label
+logit.threads$Time_To_First_Answer <- threads$Time_To_First_Answer
+
+# add columns for date/time data
+logit.threads$Created_Month <- factor(threads$Created_Month)
+logit.threads$Created_Week_Day <- factor(threads$Created_Week_Day)
+logit.threads$Created_Hour <- factor(threads$Created_Hour)
+
+# add columns for question and title lengths
+logit.threads$Question_Length <- threads$Question_Length
+logit.threads$Title_Length <- threads$Title_Length
+
+# add forum attributes
+logit.threads$Forum_Category <- factor(threads$Forum_Category)
+logit.threads$Forum_Name <- factor(threads$Forum_Name)
+
+# add asker attributes
+logit.threads$Asker_Stars <- threads$Asker_Stars
+logit.threads$Asker_Type <- factor(threads$Asker_Type)
+logit.threads$Asker_Points <- threads$Asker_Points
+
+# add whehter or not the question contained code
+logit.threads$Question_Has_Code <- factor(threads$Question_Has_Code)
+```
+
+Like, before I will break the data into test and training sets using the GUID.
+
+```{r data.split.logit}
+# the training set has IDs beginning with a number
+logit.threads.train <- subset(logit.threads, !is.na(as.numeric(substr(Thread_ID,1,1))))
+nrow(logit.threads.train)
+
+# the test set has IDs beginning with a letter d or later
+logit.threads.test <- subset(logit.threads, is.na(as.numeric(substr(Thread_ID,1,1))))
+nrow(logit.threads.test)
+```
+
+Now for the magic. Let's fit the model using the aod package.
+
+```{r fit.logit , fig.width=5.5, fig.height=4}
+# make sure the package is loaded
+library(aod)
+
+# fit the logistic regression model
+success.logit <- glm(Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points + Question_Has_Code, data = logit.threads.train, family = poisson())
+
+# what does the model look like?
+summary(success.logit)
+
+# use the model to calculate success probabilities for each test example
+logit.threads.test$prediction <- Predict(success.logit, logit.threads.test, type="response")
+
+# group predictions into 4% ranges
+logit.threads.test$prediction_range <- ceiling(logit.threads.test$prediction * 25.0) / 25.0 - 0.02
+
+# aggregate by the 5% ranges to see how the predictions compared to the results
+succ.ply <- ddply(logit.threads.test, "prediction_range", summarise, Total_Questions = length(Success), Successes = sum(Success))
+succ.ply
+
+# plot the performance of the model on the test data
+ggplot(succ.ply, aes(x = as.numeric(prediction_range), y = Successes/Total_Questions))+ my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Actual Success Rate", x="Predicted Success Rate") + 
+  geom_point() + coord_cartesian(xlim=c(0.0, 1), ylim=c(0.0, 1))
+```
+
+Like the tree model, this seems to give us a reasonable probabilities for our test data. But, again, the model gives us very few predictions with probability < 50%. Could this be because we don't have enough failures in the training data?
+
+```{r data.split.logit2 , fig.width=5.5, fig.height=4}
+# do some fancy subsetting to get almost balanced training set
+logit.threads.train <- subset(logit.threads, (is.na(as.numeric(substr(Thread_ID,1,1))) | substr(Thread_ID,1,1) < 'c') & (Success == 0 | is.na(as.numeric(substr(Thread_ID,1,1)))))
+nrow(logit.threads.train)
+
+# make sure we are relatively balanced
+nrow(subset(logit.threads.train, Success == 1))
+nrow(subset(logit.threads.train, Success == 0))
+
+# the test set is all the stuff not in the training set
+logit.threads.test <- subset(logit.threads, is.na(as.numeric(substr(Thread_ID,1,1))) & substr(Thread_ID,1,1) >= 'c')
+nrow(logit.threads.test)
+
+nrow(subset(logit.threads.test, Success == 1))
+nrow(subset(logit.threads.test, Success == 0))
+
+# fit the logistic regression model (again)
+success.logit <- glm(Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points + Question_Has_Code, data = logit.threads.train, family = poisson())
+
+# what does the model look like?
+summary(success.logit)
+
+# use the model to calculate success probabilities for each test example
+logit.threads.test$prediction <- Predict(success.logit, logit.threads.test, type="response")
+
+# group predictions into 4% ranges
+logit.threads.test$prediction_range <- ceiling(logit.threads.test$prediction * 25.0) / 25.0 - 0.02
+
+# aggregate by the 5% ranges to see how the predictions compared to the results
+succ.ply <- ddply(logit.threads.test, "prediction_range", summarise, Total_Questions = length(Success), Successes = sum(Success))
+succ.ply
+
+# plot the performance of the model on the test data
+ggplot(succ.ply, aes(x = as.numeric(prediction_range), y = Successes/Total_Questions))+ my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Actual Success Rate", x="Predicted Success Rate") + 
+  geom_point() + coord_cartesian(xlim=c(0.0, 1), ylim=c(0.0, 1))
+
+rm(succ.ply, logit.threads, logit.threads.train, logit.threads.test)
+```
+
+Alas, while the predictions are more centered around 50%, the reality is still above 50% (approximately 25% prediction for most prediction ranges). I will conclude that, using only the attributes I have looked at in this analysis, we cannot predict (at the time of a thread's posting) the outcome of the thread. We do however have an indicator of *liklihood to succeed*, which gives us a rough ranking system and might prove useful in practice.

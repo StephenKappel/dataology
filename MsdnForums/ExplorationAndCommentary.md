@@ -833,17 +833,27 @@ ggplot(succ.ply, aes(x = factor(Num_MSFT_Posts), y = Successes/Total_Questions))
   labs(title="SQL & SharePoint Threads", y="Success Rate", x="Number of Microsoft Posts") +
   geom_point() + coord_cartesian(xlim=c(0.5,5.5), ylim=c(0, 1))
 
+# By Questions with Code
+succ.ply <- ddply(threads, "Question_Has_Code", summarise, Total_Questions = length(Num_Answers), Successes = sum(Answered))
+ggplot(succ.ply, aes(x = factor(Question_Has_Code), y = Successes/Total_Questions)) + my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Success Rate", x="Question Has Code (1 = Yes)") +
+  geom_point() + coord_cartesian(xlim=c(0.5, 2.5), ylim=c(0, 1))
+
 rm(succ.ply)
 ```
 
-![plot of chunk thread.length.succ](figure/thread_length_succ1.png) ![plot of chunk thread.length.succ](figure/thread_length_succ2.png) ![plot of chunk thread.length.succ](figure/thread_length_succ3.png) ![plot of chunk thread.length.succ](figure/thread_length_succ4.png) ![plot of chunk thread.length.succ](figure/thread_length_succ5.png) ![plot of chunk thread.length.succ](figure/thread_length_succ6.png) ![plot of chunk thread.length.succ](figure/thread_length_succ7.png) ![plot of chunk thread.length.succ](figure/thread_length_succ8.png) ![plot of chunk thread.length.succ](figure/thread_length_succ9.png) 
+![plot of chunk thread.length.succ](figure/thread_length_succ1.png) ![plot of chunk thread.length.succ](figure/thread_length_succ2.png) ![plot of chunk thread.length.succ](figure/thread_length_succ3.png) ![plot of chunk thread.length.succ](figure/thread_length_succ4.png) ![plot of chunk thread.length.succ](figure/thread_length_succ5.png) ![plot of chunk thread.length.succ](figure/thread_length_succ6.png) ![plot of chunk thread.length.succ](figure/thread_length_succ7.png) ![plot of chunk thread.length.succ](figure/thread_length_succ8.png) ![plot of chunk thread.length.succ](figure/thread_length_succ9.png) ![plot of chunk thread.length.succ](figure/thread_length_succ10.png) 
 
 
 These graphs reveal much the same as our earlier graphs. More success is seen for questions posted later in the year and on weekends. Shorter title and questions get better results than longer ones. Here is one last insightful morsel, though: If an issue gets an initial reply during the first five days, it is about 75% likely to eventually get resolved successfully. But, as each day after the 5-day mark passes, the question gets less and less likely to receive a successful answer. By day 10, the likelihood of a successful resolution is only about 50%. 
 
+I am surprised to see that a question with code in the question are less likely to be answered. It was my intuition that questions that have code would be more likely to be answered because they are more reproducable and less likely to be overly vague. Perhaps the truth is that problems involving code are more likely to be complex and therefore are less likely to be answered.
+
 ### Modeling Success
 
-Now that the high-level patterns in the data have been explored, I want to use some of that insight to build a model. In particular, I want to build a decision tree that will allow us to  gaugue the probability a post will be successfully resolved. And, I want to make this predicition based only on the attributes that I know immediately when the question is first posted. Theoretically, something like this could be used to identify weak posts and either (1) give feedback/suggestions to the poster or (2) alert Microsoft to give attention to these questions early.
+Now that the high-level patterns in the data have been explored, I want to use some of that insight to build a model to gaugue the probability a post will be successfully resolved. And, I want to make this predicition based only on the attributes that I know immediately when the question is first posted. Theoretically, something like this could be used to identify weak posts and either (1) give feedback/suggestions to the poster or (2) alert Microsoft to give attention to these questions early.
+
+To start, I will use a regression tree, as the results of this model should be interpretable and may provide further insight into drivers of thread success.
 
 I will start by preparing the data, making all relavant into categorical data.
 
@@ -878,6 +888,9 @@ tree.threads$Asker_Stars <- factor(threads$Asker_Stars)
 tree.threads$Asker_Type <- factor(threads$Asker_Type)
 tree.threads$Asker_Points <- floor((threads$Asker_Points + 199)/200)
 tree.threads$Asker_Points <- factor(sapply(tree.threads$Asker_Points, function(x) min(x, 6)))
+
+# add whehter or not the question contained code
+tree.threads$Question_Has_Code <- factor(threads$Question_Has_Code)
 ```
 
 
@@ -973,7 +986,7 @@ While it will surely have a negative impact on the granularity provided by the m
 
 ```r
 # fit the tree
-success.tree <- ctree(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points, data = tree.threads.train)
+success.tree <- ctree(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points + Question_Has_Code, data = tree.threads.train)
 
 # use the model to calculate success probabilities for each test example
 tree.threads.test$prediction <- Predict(success.tree, tree.threads.test)
@@ -1029,3 +1042,402 @@ The results here confirm our obserations from the more complex tree. We see that
 With fewer terminal nodes, the simpler model gives us fewer predictions with low probabilities. In fact, it has no predictions with a probability as low as 50%. The more complicated model had over 1,700 predictions in the test set with 50% probability or less. This appears to be evidence of under-fitting.
 
 Unfortuantely, even the more complex tree does not yield a high percentage of points with less that 50% probability. So, while we are able to look at questions with less than 70% success probablity and know these are more likely to not get answered than questions with 90% success probability, there is still a lot of room left for providing further granularity. This isn't surprising considering the small number of predictors we are considering. Text analysis will probably be needed to significantly improve the performance of this model.
+
+Next, let's try another less interpretable model -- a logit regression.
+
+
+```r
+# create new data.frame that will just have the columns desired for the logit model
+logit.threads <- data.frame(Thread_ID = threads$Thread_ID)
+
+# add the 'label' column, indicating success or failure
+logit.threads$Success <- ceiling(threads$Num_Answers/100)
+
+# add a TTFA column as another potential label
+logit.threads$Time_To_First_Answer <- threads$Time_To_First_Answer
+
+# add columns for date/time data
+logit.threads$Created_Month <- factor(threads$Created_Month)
+logit.threads$Created_Week_Day <- factor(threads$Created_Week_Day)
+logit.threads$Created_Hour <- factor(threads$Created_Hour)
+
+# add columns for question and title lengths
+logit.threads$Question_Length <- threads$Question_Length
+logit.threads$Title_Length <- threads$Title_Length
+
+# add forum attributes
+logit.threads$Forum_Category <- factor(threads$Forum_Category)
+logit.threads$Forum_Name <- factor(threads$Forum_Name)
+
+# add asker attributes
+logit.threads$Asker_Stars <- threads$Asker_Stars
+logit.threads$Asker_Type <- factor(threads$Asker_Type)
+logit.threads$Asker_Points <- threads$Asker_Points
+
+# add whehter or not the question contained code
+logit.threads$Question_Has_Code <- factor(threads$Question_Has_Code)
+```
+
+
+Like, before I will break the data into test and training sets using the GUID.
+
+
+```r
+# the training set has IDs beginning with a number
+logit.threads.train <- subset(logit.threads, !is.na(as.numeric(substr(Thread_ID,1,1))))
+nrow(logit.threads.train)
+```
+
+```
+## [1] 45210
+```
+
+```r
+
+# the test set has IDs beginning with a letter d or later
+logit.threads.test <- subset(logit.threads, is.na(as.numeric(substr(Thread_ID,1,1))))
+nrow(logit.threads.test)
+```
+
+```
+## [1] 27114
+```
+
+
+Now for the magic. Let's fit the model using the aod package.
+
+
+```r
+# make sure the package is loaded
+library(aod)
+
+# fit the logistic regression model
+success.logit <- glm(Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points + Question_Has_Code, data = logit.threads.train, family = poisson())
+
+# what does the model look like?
+summary(success.logit)
+```
+
+```
+## 
+## Call:
+## glm(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + 
+##     Question_Length + Title_Length + Forum_Category + Asker_Stars + 
+##     Asker_Type + Asker_Points + Question_Has_Code, family = poisson(), 
+##     data = logit.threads.train)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3938   0.0589   0.2277   0.3071   1.5615  
+## 
+## Coefficients:
+##                           Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)              -2.40e-01   2.08e-01   -1.16   0.2474    
+## Created_Month2           -3.29e-02   2.58e-02   -1.28   0.2022    
+## Created_Month3           -1.51e-02   2.53e-02   -0.60   0.5515    
+## Created_Month4           -3.25e-02   2.52e-02   -1.29   0.1967    
+## Created_Month5           -6.77e-02   2.57e-02   -2.63   0.0086 ** 
+## Created_Month6           -4.90e-02   2.70e-02   -1.82   0.0692 .  
+## Created_Month7           -3.52e-02   2.64e-02   -1.33   0.1827    
+## Created_Month8           -5.10e-03   2.64e-02   -0.19   0.8467    
+## Created_Month9            4.29e-03   2.62e-02    0.16   0.8697    
+## Created_Month10           2.49e-02   2.59e-02    0.97   0.3345    
+## Created_Month11           3.01e-02   2.66e-02    1.13   0.2586    
+## Created_Month12           6.13e-02   2.74e-02    2.24   0.0253 *  
+## Created_Week_Day2        -4.01e-02   2.99e-02   -1.34   0.1795    
+## Created_Week_Day3        -5.77e-02   2.95e-02   -1.95   0.0507 .  
+## Created_Week_Day4        -4.39e-02   2.96e-02   -1.48   0.1376    
+## Created_Week_Day5        -5.47e-02   2.96e-02   -1.85   0.0649 .  
+## Created_Week_Day6        -3.86e-02   3.01e-02   -1.28   0.1993    
+## Created_Week_Day7        -2.98e-03   3.74e-02   -0.08   0.9365    
+## Created_Hour1             6.50e-03   6.15e-02    0.11   0.9158    
+## Created_Hour2            -2.90e-02   6.11e-02   -0.47   0.6348    
+## Created_Hour3            -2.76e-03   5.81e-02   -0.05   0.9621    
+## Created_Hour4             3.57e-02   5.53e-02    0.65   0.5179    
+## Created_Hour5            -4.31e-03   5.25e-02   -0.08   0.9345    
+## Created_Hour6             1.04e-02   5.06e-02    0.21   0.8364    
+## Created_Hour7            -1.49e-02   5.03e-02   -0.30   0.7663    
+## Created_Hour8            -2.51e-02   5.04e-02   -0.50   0.6185    
+## Created_Hour9            -8.47e-03   4.90e-02   -0.17   0.8629    
+## Created_Hour10           -5.62e-03   4.91e-02   -0.11   0.9088    
+## Created_Hour11           -2.88e-02   4.93e-02   -0.58   0.5591    
+## Created_Hour12           -1.33e-02   4.88e-02   -0.27   0.7850    
+## Created_Hour13           -1.55e-02   4.84e-02   -0.32   0.7494    
+## Created_Hour14           -5.52e-03   4.78e-02   -0.12   0.9081    
+## Created_Hour15           -6.74e-03   4.80e-02   -0.14   0.8882    
+## Created_Hour16           -9.18e-03   4.89e-02   -0.19   0.8510    
+## Created_Hour17            1.94e-03   4.95e-02    0.04   0.9687    
+## Created_Hour18           -1.61e-03   4.96e-02   -0.03   0.9740    
+## Created_Hour19            2.25e-03   4.97e-02    0.05   0.9639    
+## Created_Hour20            2.03e-03   5.01e-02    0.04   0.9677    
+## Created_Hour21           -2.39e-02   5.16e-02   -0.46   0.6426    
+## Created_Hour22           -9.28e-03   5.40e-02   -0.17   0.8636    
+## Created_Hour23           -2.34e-02   5.87e-02   -0.40   0.6898    
+## Question_Length          -2.96e-05   4.69e-06   -6.31  2.7e-10 ***
+## Title_Length             -1.34e-03   2.08e-04   -6.44  1.2e-10 ***
+## Forum_CategorySQL Server  1.19e-01   1.10e-02   10.88  < 2e-16 ***
+## Asker_Stars              -2.14e-02   1.11e-02   -1.92   0.0544 .  
+## Asker_TypeMVP             2.07e-02   2.30e-01    0.09   0.9280    
+## Asker_TypeOther           6.40e-02   2.00e-01    0.32   0.7496    
+## Asker_Points              2.24e-06   1.80e-06    1.24   0.2142    
+## Question_Has_Code1       -3.95e-02   2.32e-02   -1.70   0.0888 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 19433  on 45209  degrees of freedom
+## Residual deviance: 19134  on 45161  degrees of freedom
+## AIC: 87154
+## 
+## Number of Fisher Scoring iterations: 5
+```
+
+```r
+
+# use the model to calculate success probabilities for each test example
+logit.threads.test$prediction <- Predict(success.logit, logit.threads.test, type="response")
+
+# group predictions into 4% ranges
+logit.threads.test$prediction_range <- ceiling(logit.threads.test$prediction * 25.0) / 25.0 - 0.02
+
+# aggregate by the 5% ranges to see how the predictions compared to the results
+succ.ply <- ddply(logit.threads.test, "prediction_range", summarise, Total_Questions = length(Success), Successes = sum(Success))
+succ.ply
+```
+
+```
+##    prediction_range Total_Questions Successes
+## 1              0.14               1         1
+## 2              0.18               1         1
+## 3              0.22               3         2
+## 4              0.26               3         2
+## 5              0.30               4         2
+## 6              0.34              10         7
+## 7              0.38              13         9
+## 8              0.42              14         5
+## 9              0.46              19         8
+## 10             0.50              27        18
+## 11             0.54              78        42
+## 12             0.58             163       100
+## 13             0.62             645       379
+## 14             0.66            2637      1676
+## 15             0.70            6103      4266
+## 16             0.74            5909      4438
+## 17             0.78            4644      3714
+## 18             0.82            3980      3289
+## 19             0.86            2068      1768
+## 20             0.90             663       583
+## 21             0.94             113       102
+## 22             0.98              16        15
+```
+
+```r
+
+# plot the performance of the model on the test data
+ggplot(succ.ply, aes(x = as.numeric(prediction_range), y = Successes/Total_Questions))+ my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Actual Success Rate", x="Predicted Success Rate") + 
+  geom_point() + coord_cartesian(xlim=c(0.0, 1), ylim=c(0.0, 1))
+```
+
+![plot of chunk fit.logit ](figure/fit_logit_.png) 
+
+
+Like the tree model, this seems to give us a reasonable probabilities for our test data. But, again, the model gives us very few predictions with probability < 50%. Could this be because we don't have enough failures in the training data?
+
+
+```r
+# do some fancy subsetting to get almost balanced training set
+logit.threads.train <- subset(logit.threads, (is.na(as.numeric(substr(Thread_ID,1,1))) | substr(Thread_ID,1,1) < 'c') & (Success == 0 | is.na(as.numeric(substr(Thread_ID,1,1)))))
+nrow(logit.threads.train)
+```
+
+```
+## [1] 38363
+```
+
+```r
+
+# make sure we are relatively balanced
+nrow(subset(logit.threads.train, Success == 1))
+```
+
+```
+## [1] 20427
+```
+
+```r
+nrow(subset(logit.threads.train, Success == 0))
+```
+
+```
+## [1] 17936
+```
+
+```r
+
+# the test set is all the stuff not in the training set
+logit.threads.test <- subset(logit.threads, is.na(as.numeric(substr(Thread_ID,1,1))) & substr(Thread_ID,1,1) >= 'c')
+nrow(logit.threads.test)
+```
+
+```
+## [1] 18167
+```
+
+```r
+
+nrow(subset(logit.threads.test, Success == 1))
+```
+
+```
+## [1] 13756
+```
+
+```r
+nrow(subset(logit.threads.test, Success == 0))
+```
+
+```
+## [1] 4411
+```
+
+```r
+
+# fit the logistic regression model (again)
+success.logit <- glm(Success ~ Created_Month + Created_Week_Day + Created_Hour + Question_Length + Title_Length + Forum_Category + Asker_Stars + Asker_Type + Asker_Points + Question_Has_Code, data = logit.threads.train, family = poisson())
+
+# what does the model look like?
+summary(success.logit)
+```
+
+```
+## 
+## Call:
+## glm(formula = Success ~ Created_Month + Created_Week_Day + Created_Hour + 
+##     Question_Length + Title_Length + Forum_Category + Asker_Stars + 
+##     Asker_Type + Asker_Points + Question_Has_Code, family = poisson(), 
+##     data = logit.threads.train)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -1.331  -0.996   0.337   0.569   2.617  
+## 
+## Coefficients:
+##                           Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)              -5.74e-01   2.87e-01   -2.00   0.0454 *  
+## Created_Month2           -6.78e-02   3.34e-02   -2.03   0.0425 *  
+## Created_Month3           -4.37e-02   3.29e-02   -1.33   0.1833    
+## Created_Month4           -6.19e-02   3.28e-02   -1.89   0.0590 .  
+## Created_Month5           -9.82e-02   3.31e-02   -2.97   0.0030 ** 
+## Created_Month6           -8.92e-02   3.47e-02   -2.57   0.0100 *  
+## Created_Month7           -4.06e-02   3.38e-02   -1.20   0.2292    
+## Created_Month8           -1.13e-02   3.43e-02   -0.33   0.7410    
+## Created_Month9            2.93e-03   3.43e-02    0.09   0.9320    
+## Created_Month10           3.88e-02   3.38e-02    1.15   0.2505    
+## Created_Month11           5.45e-02   3.42e-02    1.59   0.1111    
+## Created_Month12           1.13e-01   3.54e-02    3.20   0.0014 ** 
+## Created_Week_Day2        -6.33e-02   3.83e-02   -1.65   0.0987 .  
+## Created_Week_Day3        -9.75e-02   3.80e-02   -2.57   0.0103 *  
+## Created_Week_Day4        -8.45e-02   3.80e-02   -2.22   0.0262 *  
+## Created_Week_Day5        -1.01e-01   3.80e-02   -2.64   0.0082 ** 
+## Created_Week_Day6        -7.14e-02   3.86e-02   -1.85   0.0643 .  
+## Created_Week_Day7         5.39e-03   4.81e-02    0.11   0.9108    
+## Created_Hour1             2.54e-03   7.80e-02    0.03   0.9740    
+## Created_Hour2            -6.34e-02   7.88e-02   -0.80   0.4212    
+## Created_Hour3            -5.02e-02   7.65e-02   -0.66   0.5115    
+## Created_Hour4             1.36e-02   7.10e-02    0.19   0.8484    
+## Created_Hour5            -1.21e-02   6.66e-02   -0.18   0.8561    
+## Created_Hour6            -2.52e-02   6.44e-02   -0.39   0.6955    
+## Created_Hour7             7.52e-04   6.32e-02    0.01   0.9905    
+## Created_Hour8            -5.68e-02   6.38e-02   -0.89   0.3732    
+## Created_Hour9            -2.06e-02   6.18e-02   -0.33   0.7384    
+## Created_Hour10           -1.32e-02   6.22e-02   -0.21   0.8318    
+## Created_Hour11           -5.54e-02   6.23e-02   -0.89   0.3737    
+## Created_Hour12           -5.11e-02   6.18e-02   -0.83   0.4079    
+## Created_Hour13           -6.66e-02   6.15e-02   -1.08   0.2789    
+## Created_Hour14           -5.12e-02   6.10e-02   -0.84   0.4015    
+## Created_Hour15           -6.37e-02   6.10e-02   -1.04   0.2969    
+## Created_Hour16            1.48e-03   6.14e-02    0.02   0.9807    
+## Created_Hour17           -3.42e-02   6.30e-02   -0.54   0.5874    
+## Created_Hour18           -8.90e-03   6.27e-02   -0.14   0.8871    
+## Created_Hour19           -6.57e-02   6.36e-02   -1.03   0.3017    
+## Created_Hour20           -1.03e-02   6.36e-02   -0.16   0.8716    
+## Created_Hour21           -2.76e-02   6.51e-02   -0.42   0.6720    
+## Created_Hour22           -2.47e-02   6.84e-02   -0.36   0.7185    
+## Created_Hour23           -5.17e-02   7.39e-02   -0.70   0.4842    
+## Question_Length          -7.24e-05   7.45e-06   -9.71   <2e-16 ***
+## Title_Length             -2.70e-03   2.74e-04   -9.83   <2e-16 ***
+## Forum_CategorySQL Server  2.19e-01   1.42e-02   15.45   <2e-16 ***
+## Asker_Stars              -3.95e-02   1.45e-02   -2.73   0.0063 ** 
+## Asker_TypeMVP             2.49e-01   3.04e-01    0.82   0.4133    
+## Asker_TypeOther           1.94e-01   2.78e-01    0.70   0.4858    
+## Asker_Points              6.27e-06   2.95e-06    2.13   0.0331 *  
+## Question_Has_Code1       -5.13e-02   2.98e-02   -1.72   0.0852 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 25748  on 38362  degrees of freedom
+## Residual deviance: 25091  on 38314  degrees of freedom
+## AIC: 66043
+## 
+## Number of Fisher Scoring iterations: 5
+```
+
+```r
+
+# use the model to calculate success probabilities for each test example
+logit.threads.test$prediction <- Predict(success.logit, logit.threads.test, type="response")
+
+# group predictions into 4% ranges
+logit.threads.test$prediction_range <- ceiling(logit.threads.test$prediction * 25.0) / 25.0 - 0.02
+
+# aggregate by the 5% ranges to see how the predictions compared to the results
+succ.ply <- ddply(logit.threads.test, "prediction_range", summarise, Total_Questions = length(Success), Successes = sum(Success))
+succ.ply
+```
+
+```
+##    prediction_range Total_Questions Successes
+## 1              0.02               3         2
+## 2              0.06               9         6
+## 3              0.10              12         8
+## 4              0.14              12         5
+## 5              0.18              10         6
+## 6              0.22              18        10
+## 7              0.26              31        15
+## 8              0.30              71        40
+## 9              0.34             160       104
+## 10             0.38             461       273
+## 11             0.42            1302       830
+## 12             0.46            2888      2014
+## 13             0.50            3410      2498
+## 14             0.54            2758      2125
+## 15             0.58            2197      1755
+## 16             0.62            1980      1613
+## 17             0.66            1418      1221
+## 18             0.70             819       697
+## 19             0.74             379       326
+## 20             0.78             170       152
+## 21             0.82              38        37
+## 22             0.86              15        13
+## 23             0.90               5         5
+## 24             1.02               1         1
+```
+
+```r
+
+# plot the performance of the model on the test data
+ggplot(succ.ply, aes(x = as.numeric(prediction_range), y = Successes/Total_Questions))+ my.theme + 
+  labs(title="SQL & SharePoint Threads", y="Actual Success Rate", x="Predicted Success Rate") + 
+  geom_point() + coord_cartesian(xlim=c(0.0, 1), ylim=c(0.0, 1))
+
+rm(succ.ply, logit.threads, logit.threads.train, logit.threads.test)
+```
+
+![plot of chunk data.split.logit2 ](figure/data_split_logit2_.png) 
+
+
+Alas, while the predictions are more centered around 50%, the reality is still above 50% (approximately 25% prediction for most prediction ranges). I will conclude that, using only the attributes I have looked at in this analysis, we cannot predict (at the time of a thread's posting) the outcome of the thread. We do however have an indicator of *liklihood to succeed*, which gives us a rough ranking system and might prove useful in practice.
