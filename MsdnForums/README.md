@@ -11,6 +11,8 @@ Hopefully, you will find my work in this repository to be a good first foray int
 Here's a brief outline of the files/folders in this project:
 
 * **ForumScraper** - This folder contains my PyCharm project with the Python code I used to scrape my data from MSDN.
+* **ForumExplorer** - This folder contains a d3/crossfilter visualization of the data. For the time being, this must be downloaded and hosted locally to see it in action. I highly recommend checking this out before diving into any of my R code.
+* **TextAnalysis** - This folder contains my final project submission for my Machine Learning course, in which I played around with text analysis, making use of the text from the MSDN forums.
 * **ForumsDb.zip** - This zip contains the SQL required to completely replicate my SQL Server Express database (including schema and data) on your machine.
 * **DatabaseDiagram.PNG** - A quick screenshot of my database's structure (in case you don't want to recreate it yourself).
 * **ExplorationAndCommentary.md** - A very comprehensive brain dump of my exploration of the data in R, along with some notes about how I scraped the data.
@@ -24,4 +26,6 @@ Forums are subject to social dynamics. That is, the personalities, habits, and r
 
 Being that we see significant differences between SQL Server forums and SharePoint forums, it would be insightful to better understand what's being done differently in these spaces. Talking to experts on these forums might be helpful. Also, adding other forum categories to the analysis to see how they compare would add more color. Perhaps every forum category has it's own unique profile, or perhaps most forums are like SQL Server forums and SharePoint forums are outliers (or vice versa).
 
-Perhaps the most obvious (yet most difficult) realm of forums analysis is the analysis of the actual text. In a separate project, I have begun work to apply LDA topic modeling to the text. Plus, I'm interested to see how this performs vs. a tf-idf analysis. Stay tuned!
+The ForumExplorer d3 visualization is a solid start, but this can definitely be improved upon, and it scope can be broadened to included other data points from the database.
+
+While I have started to play around with text analysis, I have not yet really dug deep enough to provide meaningful insight. With some text analytics basics now in place, it should be possible to start focusing this analysis on real use cases with actionable results.
