@@ -1,0 +1,870 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,500' rel='stylesheet' type='text/css'>
+    <title>MSDN SQL and SP Forums</title>
+</head>
+    <body bgcolor ="black">
+    <script src="d3.min.js"></script>
+    <script src="crossfilter.min.js"></script>
+    <style type="text/css">
+        .domain {
+            opacity: 0;
+        }
+        .yAxis line{
+            fill: none;
+            stroke: white;
+            shape-rendering: crispEdges;
+            width: 4px;
+            opacity: 1;
+        }
+        text {
+            font-family: 'Ubuntu', sans-serif;
+            fill:white;
+        }
+        .title {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .xLabel {
+            font-size: 10px;
+            font-weight: 400;
+        }
+        .yAxis {
+            font-size: 10px;
+            font-weight: 400;
+        }
+        .chartTypeToggle text {
+            fill: white;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .forums text {
+            font-size: 11px;
+            font-weight: 400;
+        }
+        .threadList text {
+            font-size: 10px;
+            font-weight: 400;
+            fill:  lightgray;
+        }
+        .leadin {
+            font-family: 'Ubuntu', sans-serif;
+            color:white;
+            font-size: 11px;
+            font-weight: 400;
+            margin-left:10px;
+        }
+        .grandheader {
+            font-family: 'Ubuntu', sans-serif;
+            color:white;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        .tiptext{
+            font-size: 11px;
+            font-weight: 400;
+        }
+    </style>
+        <div class ="grandheader">Micrsoft Developer Network - SharePoint and SQL Server Forums<br /><br /></div>
+        <div class="leadin">The interactive data visualization below was created to expose patterns within the dataset of 72,324 threads I scraped from MSDN's
+             English language forums for SharePoint and SQL Server between 2/16/14 and 2/21/14. The population of threads includes those threads created during
+             calendary year 2013. Keep in mind that the number of votes and number of views are as of the date of the scraping.<br /><br />
+            Each chart below shows a count of threads on the y-axis, and a second attribute (as indicated in the chart's title) along the x-axis. 
+            Filter the dataset by clicking on the bars or on the forum names on the right.
+            A single click toggles the selected value on/off. 
+            A double click narrows the filter selections for that attribute to only the selected value. 
+            A right click resets the filter on the selected attribute.
+        </div>
+    <svg x="0" y="0" id="mySvg" width="1440" height="950"></svg>
+    <script>
+        // define constants for chart types
+        var TOP_BOTTOM = 1,
+            LEFT_RIGHT = 2,
+            STACKED = 3,
+            SINGLE = 4;
+
+        // define MSFT colors
+        var MSFT_RED = "#f8510c",
+            MSFT_GREEN = "#7eba00",
+            MSFT_BLUE = "#00a3f4",
+            MSFT_YELLOW = "#ffba00";
+
+        // define constants for chart formatting
+        var Y_AXIS_PADDING = 46,
+            X_AXIS_PADDING = 23,
+            TITLE_PADDING = 25,
+            CHART_HEIGHT = 175,
+            BACKDROP_COLOR = "#2C3539";
+
+        // define constants for button formatting
+        var BUTTON_WIDTH = 60,
+            BUTTON_HEIGHT = 18,
+            BUTTON_COLOR = MSFT_GREEN;
+
+        // define some color constants
+        var SHAREPOINT_COLOR = MSFT_BLUE,
+            SQL_COLOR = MSFT_RED,
+            BG_COLOR = "#000000",
+            TEXT_COLOR = "#FFFFFF";
+
+        var SQL_SAMPLES_X = 500;
+
+        // this plus the thread GUID composes a full link to the thread on MSDN
+        var LINK_STUB = "http://social.msdn.microsoft.com/Forums/en-US/";
+
+        // initiate number formatters
+        var countFormat = d3.format(",d");
+        var percentFormat = d3.format(".1%");
+
+        // save reference to svg element
+        mySvg = d3.select("#mySvg");
+
+        // create background
+        mySvg.append("rect")
+            .attr("width", 1440)
+            .attr("height", 950)
+            .attr("fill", BG_COLOR);
+
+        // create some global vars to be used later
+        var myData, mySvg, myCharts, myButtons;
+        
+        // default to the top/bottom chart type
+        var chartType;
+
+        // read in thread data from the csv and put all the stuff on the page
+        d3.csv("ThreadsData.csv", function (data) {
+
+            // save data to global variable
+            myData = data;
+
+            // clean up the data types
+            myData.forEach(function (d) {
+                d.Created_Month = parseInt(d.Created_Month);
+                d.Created_Week_Day = parseInt(d.Created_Week_Day);
+                d.Created_Hour = parseInt(d.Created_Hour);
+            });
+
+            // initialize arrays in which to store reference to all charts and buttons
+            myCharts = [];
+            myButtons = [];
+
+            // inialize dict for keeping track of forums filtered on
+            forumSelections = {};
+
+            // start by having sp and sql charts be small multiples rather than stacked bars
+
+            // create crossfilter for all threads in data set
+            spThreads = crossfilter(myData.filter(function (d) { return d.Forum_Category == "SharePoint"; }));
+            sqlThreads = crossfilter(myData.filter(function (d) { return d.Forum_Category == "SQL Server"; }));
+
+            // create dimensions
+
+            spThreadsByForum = spThreads.dimension(function (d) { return d.Forum_Name; });
+            sqlThreadsByForum = sqlThreads.dimension(function (d) { return d.Forum_Name; });
+
+            spThreadsByGuid = spThreads.dimension(function (d) { return d.Thread_ID; });
+            sqlThreadsByGuid = sqlThreads.dimension(function (d) { return d.Thread_ID; });
+
+            spThreadsByMonth = spThreads.dimension(function (d) { return d.Created_Month; });
+            sqlThreadsByMonth = sqlThreads.dimension(function (d) { return d.Created_Month; });
+
+            spThreadsByDay = spThreads.dimension(function (d) { return d.Created_Week_Day; });
+            sqlThreadsByDay = sqlThreads.dimension(function (d) { return d.Created_Week_Day; });
+
+            spThreadsByHour = spThreads.dimension(function (d) { return d.Created_Hour; });
+            sqlThreadsByHour = sqlThreads.dimension(function (d) { return d.Created_Hour; });
+
+            var TTFRtransform = function (d) {
+                if (typeof(d.Time_To_First_Reply) == "string" && d.Time_To_First_Reply == "") { return 12; }
+                return Math.min(Math.ceil(Math.log(Math.floor(d.Time_To_First_Reply * 288 / 3) + 1) / Math.log(2)), 12);
+            };
+            spThreadsByTTFR = spThreads.dimension(TTFRtransform);
+            sqlThreadsByTTFR = sqlThreads.dimension(TTFRtransform);
+            
+            var TTFAtransform = function (d) {
+                if (typeof (d.Time_To_First_Answer) == "string" && d.Time_To_First_Answer == "") { return 14; }
+                return Math.min(Math.floor(d.Time_To_First_Answer), 14);
+            };
+            spThreadsByTTFA = spThreads.dimension(TTFAtransform);
+            sqlThreadsByTTFA = sqlThreads.dimension(TTFAtransform);
+
+            spThreadsByAnswered = spThreads.dimension(function (d) { return 1 - d.Answered; });
+            sqlThreadsByAnswered = sqlThreads.dimension(function (d) { return 1 - d.Answered; });
+
+            var lengthTransform = function (d) {
+                return Math.min(Math.floor((parseInt(d.Title_Length) + parseInt(d.Question_Length)) / 100), 15);
+            };
+            spThreadsByLength = spThreads.dimension(lengthTransform);
+            sqlThreadsByLength = sqlThreads.dimension(lengthTransform);
+
+            var viewTransform = function (d) {
+                return Math.min(Math.floor((parseInt(d.Num_Views)) / 100), 15);
+            };
+            spThreadsByViews = spThreads.dimension(viewTransform);
+            sqlThreadsByViews = sqlThreads.dimension(viewTransform);
+
+            var votesTransform = function (d) {
+                return Math.min(parseInt(d.Num_Votes), 4);
+            };
+            spThreadsByVotes = spThreads.dimension(votesTransform);
+            sqlThreadsByVotes = sqlThreads.dimension(votesTransform);
+
+            // create groups
+
+            spThreadsGroupsByForum = spThreadsByForum.group();
+            sqlThreadsGroupsByForum = sqlThreadsByForum.group();
+
+            spThreadsGroupsByGuid = spThreadsByGuid.group();
+            sqlThreadsGroupsByGuid = sqlThreadsByGuid.group();
+
+            spThreadsGroupsByMonth = spThreadsByMonth.group().reduceCount();
+            sqlThreadsGroupsByMonth = sqlThreadsByMonth.group().reduceCount();
+
+            spThreadsGroupsByDay = spThreadsByDay.group().reduceCount();
+            sqlThreadsGroupsByDay = sqlThreadsByDay.group().reduceCount();
+
+            spThreadsGroupsByHour = spThreadsByHour.group().reduceCount();
+            sqlThreadsGroupsByHour = sqlThreadsByHour.group().reduceCount();
+            
+            spThreadsGroupsByTTFR = spThreadsByTTFR.group().reduceCount();
+            sqlThreadsGroupsByTTFR = sqlThreadsByTTFR.group().reduceCount();
+
+            spThreadsGroupsByTTFA = spThreadsByTTFA.group().reduceCount();
+            sqlThreadsGroupsByTTFA = sqlThreadsByTTFA.group().reduceCount();
+
+            spThreadsGroupsByAnswered = spThreadsByAnswered.group().reduceCount();
+            sqlThreadsGroupsByAnswered = sqlThreadsByAnswered.group().reduceCount();
+
+            spThreadsGroupsByLength = spThreadsByLength.group().reduceCount();
+            sqlThreadsGroupsByLength = sqlThreadsByLength.group().reduceCount();
+
+            spThreadsGroupsByViews = spThreadsByViews.group().reduceCount();
+            sqlThreadsGroupsByViews = sqlThreadsByViews.group().reduceCount();
+
+            spThreadsGroupsByVotes = spThreadsByVotes.group().reduceCount();
+            sqlThreadsGroupsByVotes = sqlThreadsByVotes.group().reduceCount();
+
+            // create the SplitChart objects
+            var firstRow = 25,
+                secondRow = firstRow + CHART_HEIGHT + 10,
+                thirdRow = secondRow + CHART_HEIGHT + 10;
+
+            myCharts.push(new SplitChart("byMonth", "Creation Month", spThreadsByMonth, sqlThreadsByMonth, spThreadsGroupsByMonth, sqlThreadsGroupsByMonth,
+                10, secondRow, 330, CHART_HEIGHT, ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."]));
+
+            myCharts.push(new SplitChart("byWeekDay", "Creation Day", spThreadsByDay, sqlThreadsByDay, spThreadsGroupsByDay, sqlThreadsGroupsByDay,
+                350, secondRow, 240, CHART_HEIGHT, ["Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat."]));
+
+            myCharts.push(new SplitChart("byHour", "Creation Hour (Based on UTC Time)", spThreadsByHour, sqlThreadsByHour, spThreadsGroupsByHour, sqlThreadsGroupsByHour,
+                600, secondRow, 400, CHART_HEIGHT, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]));
+
+            myCharts.push(new SplitChart("byAnswered", "Answered Status", spThreadsByAnswered, sqlThreadsByAnswered, spThreadsGroupsByAnswered, sqlThreadsGroupsByAnswered,
+                10, firstRow, 190, CHART_HEIGHT, ["Answered", "Not Answered"]));
+
+            myCharts.push(new SplitChart("byTTFR", "Hours to First Reply", spThreadsByTTFR, sqlThreadsByTTFR, spThreadsGroupsByTTFR, sqlThreadsGroupsByTTFR,
+                210, firstRow, 350, CHART_HEIGHT, ["0", "1/4", "1/2", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "∞"]));
+
+            myCharts.push(new SplitChart("byTTFA", "Days to First Answer", spThreadsByTTFA, sqlThreadsByTTFA, spThreadsGroupsByTTFA, sqlThreadsGroupsByTTFA,
+                570, firstRow, 300, CHART_HEIGHT, ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "∞"]));
+
+            myCharts.push(new SplitChart("byLength", "Title + Question Length (in Characters)", spThreadsByLength, sqlThreadsByLength, spThreadsGroupsByLength, sqlThreadsGroupsByLength,
+                10, thirdRow, 420, CHART_HEIGHT, ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1.0k", "1.1k", "1.2k", "1.3k", "1.4k", "1.5k", "∞"]));
+
+            myCharts.push(new SplitChart("byViews", "Views", spThreadsByViews, sqlThreadsByViews, spThreadsGroupsByViews, sqlThreadsGroupsByViews,
+                440, thirdRow, 420, CHART_HEIGHT, ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1.0k", "1.1k", "1.2k", "1.3k", "1.4k", "1.5k", "∞"]));
+
+            myCharts.push(new SplitChart("byVotes", "Votes", spThreadsByVotes, sqlThreadsByVotes, spThreadsGroupsByVotes, sqlThreadsGroupsByVotes,
+                870, thirdRow, 130, CHART_HEIGHT, ["0", "1", "2", "3", "∞"]));
+
+            // add buttons for switching between chart types
+            var btnX = 910;
+            mySvg.append("text").text("Chart Type").attr("class", "title").attr("transform", "translate("+btnX+",40)");
+            myButtons.push(new ChartTypeToggle("btnStacked", "Stacked", STACKED, btnX, 55));
+            myButtons.push(new ChartTypeToggle("btnLeftRight", "Grouped", LEFT_RIGHT, btnX, 80));
+            myButtons.push(new ChartTypeToggle("btnTopBottom", "Separate", TOP_BOTTOM, btnX, 105));
+            myButtons[0].select();
+
+            // start with all forums selected
+            setAllForumStatuses(true);
+
+            // toggle selection of current bar on click event
+            var clickHandler = function (d) {
+                console.log(d.key);
+                forumSelections[d.key] = !forumSelections[d.key];
+                filterForums();
+                refreshAll();
+            }
+
+            // make only the target of the click on
+            var dblclickHandler = function (d) {
+                setAllForumStatuses(false);
+                forumSelections[d.key] = true;
+                filterForums();
+                refreshAll();
+            }
+
+            // select everything on right mouse event
+            var contextMenuHandler = function (d) {
+                setAllForumStatuses(true);
+                filterForums();
+                refreshAll();
+                d3.event.preventDefault();
+            }
+
+            // show value and percent of total on mouse over
+            var sqlMouseoverHandler = function (d) {
+                var total = 0;
+                for (var j = 0; j < sqlThreadsGroupsByForum.all().length; j++) {
+                    total += sqlThreadsGroupsByForum.all()[j].value;
+                }
+                d3.select("#tip").attr("opacity", 1);
+                d3.select("#tipCat").text("SQL Server");
+                d3.select("#tipValue").text(countFormat(d.value) + " threads");
+                d3.select("#tipPercent").text(percentFormat(d.value / total) + " of SQL total");
+            }
+
+            // show value and percent of total on mouse over
+            var spMouseoverHandler = function (d) {
+                var total = 0;
+                for (var j = 0; j < spThreadsGroupsByForum.all().length; j++) {
+                    total += spThreadsGroupsByForum.all()[j].value;
+                }
+                d3.select("#tip").attr("opacity", 1);
+                d3.select("#tipCat").text("SharePoint");
+                d3.select("#tipValue").text(countFormat(d.value) + " threads");
+                d3.select("#tipPercent").text(percentFormat(d.value / total) + " of SP total");
+            }
+
+            // hide tooltip when mouse leaves bar
+            var mouseoutHandler = function () {
+                d3.select("#tip").attr("opacity", 0);
+            }
+
+            // add list of forums
+            var listX = 1010;
+            mySvg.append("text")
+                .attr("x", listX)
+                .attr("y", 40)
+                .attr("class", "title")
+                .text("SharePoint Forums");
+            forumGroups = mySvg.selectAll(".forums")
+                .data(spThreadsGroupsByForum.all())
+                .enter()
+                .append("g")
+                .attr("class", "forums")
+                .attr("transform", function (d, i) { return "translate(1010,"+ (50 + i * 18) + ")"; })
+                .on("click", clickHandler)
+                .on("dblclick", dblclickHandler)
+                .on("contextmenu", contextMenuHandler);
+            forumGroups
+                .append("rect")
+                .attr("width", 410)
+                .attr("height", 16)
+                .attr("fill", SHAREPOINT_COLOR);
+            forumGroups
+                .append("text")
+                .attr("transform", "translate(3,12)")
+                .text(function (d) { return d.key.substring(11); });
+            forumGroups
+                .append("rect")
+                .attr("width", 410)
+                .attr("height", 16)
+                .attr("opacity", 0)
+                .on("mouseover", spMouseoverHandler)
+                .on("mouseout", mouseoutHandler);
+
+            mySvg.append("text")
+                .attr("x", listX)
+                .attr("y", 340)
+                .attr("class", "title")
+                .text("SQL Server Forums");
+            forumGroups = mySvg.selectAll(".forums2")
+                .data(sqlThreadsGroupsByForum.all())
+                .enter()
+                .append("g")
+                .attr("class", "forums")
+                .attr("transform", function (d, i) { return "translate(1010," + (350 + i * 18) + ")"; })
+                .on("click", clickHandler)
+                .on("dblclick", dblclickHandler)
+                .on("contextmenu", contextMenuHandler);
+            forumGroups
+                .append("rect")
+                .attr("width", 405)
+                .attr("height", 16)
+                .attr("fill", SQL_COLOR);
+            forumGroups
+                .append("text")
+                .attr("transform", "translate(3,12)")
+                .text(function (d) { return d.key; });
+            forumGroups
+                .append("rect")
+                .attr("width", 405)
+                .attr("height", 16)
+                .attr("opacity", 0)
+                .on("mouseover", sqlMouseoverHandler)
+                .on("mouseout", mouseoutHandler);
+
+            //add titles for lists of links
+            mySvg.append("text")
+                .attr("class", "title")
+                .text("Links to Sample SharePoint Threads")
+                .attr("x", 10)
+                .attr("y", thirdRow + CHART_HEIGHT + 25);
+
+            mySvg.append("text")
+                .attr("class", "title")
+                .text("Links to Sample SQL Server Threads")
+                .attr("x", SQL_SAMPLES_X)
+                .attr("y", thirdRow + CHART_HEIGHT + 25);
+
+            // add tool tips
+            var tip = mySvg.append("g")
+                .attr("id", "tip")
+                .attr("opacity", "0");
+            tip.append("rect")
+                .attr("width", 100)
+                .attr("height", 44)
+                .attr("fill", BACKDROP_COLOR)
+                .attr("fill-opacity", 0.6);
+            tip.append("text")
+                .attr("id", "tipCat")
+                .attr("class", "tiptext")
+                .attr("x", 5)
+                .attr("y", 13);
+            tip.append("text")
+                .attr("id", "tipValue")
+                .attr("class", "tiptext")
+                .attr("x", 5)
+                .attr("y", 26);
+            tip.append("text")
+                .attr("id", "tipPercent")
+                .attr("class", "tiptext")
+                .attr("x", 5)
+                .attr("y", 39);
+
+            // start listening for mouse movement events
+            mySvg.on("mousemove", function () {
+                ml = d3.mouse(this);
+                d3.select("#tip")
+                    .attr("transform", "translate(" + (ml[0] + 5) + "," + (ml[1] - 15) + ")");
+            });
+
+            // render the charts
+            refreshAll();
+        });
+
+        // based on current forumSelections, set the filters on the "byforum" dimensions
+        filterForums = function () {
+            spThreadsByForum.filter(function (key) { return forumSelections[key]; });
+            sqlThreadsByForum.filter(function (key) { return forumSelections[key]; });
+        }
+
+        // update forumSelections to have "status" value for every key
+        setAllForumStatuses = function (status) {
+            a = spThreadsGroupsByForum.all()
+            for (j = 0; j < a.length; j++) {
+                forumSelections[a[j].key] = status;
+            }
+            a = sqlThreadsGroupsByForum.all()
+            for (j = 0; j < a.length; j++) {
+                forumSelections[a[j].key] = status;
+            }
+        }
+
+        // call the refresh on all the SplitCharts, update forum name opacities, and build list of top 50 threads
+        function refreshAll() {
+            for (k = 0; k < myCharts.length; k++) {
+                myCharts[k].refresh();
+            }
+            mySvg.selectAll(".forums")
+                .attr("opacity", function (d) { if (forumSelections[d.key]) { return 1; } return 0.5; });
+            d3.selectAll(".threadList")
+                .remove();
+            mySvg.selectAll(".threadList")
+                .data(spThreadsByGuid.top(23))
+                .enter()
+                .append("a")
+                .attr("class", "threadList")
+                .attr("xlink:href", function (d) { return LINK_STUB + d.Thread_ID; })
+                .attr("xlink:show", "new")
+                .append("text")
+                .text(function (d) { return d.Title.substring(0, 100); })
+                .attr("x", 10)
+                .attr("y", function (d, i) { return 615 + 15 * i; });
+            mySvg.selectAll(".threadList2")
+                .data(sqlThreadsByGuid.top(23))
+                .enter()
+                .append("a")
+                .attr("class", "threadList")
+                .attr("xlink:href", function (d) { return LINK_STUB + d.Thread_ID; })
+                .attr("xlink:show", "new")
+                .append("text")
+                .text(function (d) { return d.Title.substring(0, 100); })
+                .attr("x", SQL_SAMPLES_X)
+                .attr("y", function (d, i) { return 615 + 15 * i; });
+        }
+
+        // create a class that makes a chart with two crossfilter dimensions/groups, 
+        // and allow this chart to by switched between different chart types (stacked, left-right, top-bottom)
+        function SplitChart(id, title, btmDim, topDim, btmGroup, topGroup, x, y, width, height, labels) {
+
+            // prepare a set of object properties using the input parameters
+            this.height = height;
+            this.width = width;
+            this.id = id;
+            this.numBars = btmGroup.all().length;
+            this.plotWidth = width - Y_AXIS_PADDING;
+            this.barWidth = (this.plotWidth - 6) / this.numBars;
+            this.plotHeight = height - X_AXIS_PADDING - TITLE_PADDING;
+            this.btmGroup = btmGroup;
+            this.topGroup = topGroup;
+            this.btmDim = btmDim;
+            this.topDim = topDim;
+            this.selectionStatus = {};
+            this.lablesBetween = labels.length != btmGroup.all().length;
+
+            // create a group to contain everything related to the graph
+            var grp = mySvg.append("g")
+                .attr("id", id)
+                .attr("class", "splitchart")
+                .attr("transform", "translate(" + x + "," + y + ")");
+
+            // add backdrop
+            grp.append("rect")
+                .attr("fill", BACKDROP_COLOR)
+                .attr("width", width)
+                .attr("height", height);
+
+            // add the title text
+            grp.append("text")
+                .text(title)
+                .attr("class","title")
+                .attr("transform", "translate(5,16)");
+
+            // workaround because d3 interprets this differently in anonymouse functions
+            var sc = this;
+
+            // start will everything selected
+            this.setAllStatuses(true);
+
+            // create methods for handling events
+
+            // toggle selection of current bar on click event
+            var clickHandler = function (d) {
+                sc.selectionStatus[d.key] = !sc.selectionStatus[d.key];
+                sc.filterMe();
+                refreshAll();
+            }
+
+            // make only the target of the click on
+            var dblclickHandler = function (d) {
+                sc.setAllStatuses(false);
+                sc.selectionStatus[d.key] = true;
+                sc.filterMe();
+                refreshAll();
+            }
+
+            // select everything on right mouse event
+            var contextMenuHandler = function (d) {
+                sc.setAllStatuses(true);
+                sc.filterMe();
+                refreshAll();
+                d3.event.preventDefault();
+            }
+
+            // show value and percent of total on mouse over
+            var topMouseoverHandler = function (d) {
+                var total = 0;
+                for (var j = 0; j < sc.topGroup.all().length; j++) {
+                    total += sc.topGroup.all()[j].value;
+                }
+                d3.select("#tip").attr("opacity", 1);
+                d3.select("#tipCat").text("SQL Server");
+                d3.select("#tipValue").text(countFormat(d.value) + " threads");
+                d3.select("#tipPercent").text(percentFormat(d.value / total) + " of SQL total");
+            }
+
+            // show value and percent of total on mouse over
+            var btmMouseoverHandler = function (d) {
+                var total = 0;
+                for (var j = 0; j < sc.btmGroup.all().length; j++) {
+                    total += sc.btmGroup.all()[j].value;
+                }
+                d3.select("#tip").attr("opacity", 1);
+                d3.select("#tipCat").text("SharePoint");
+                d3.select("#tipValue").text(countFormat(d.value) + " threads");
+                d3.select("#tipPercent").text(percentFormat(d.value / total) + " of SP total");
+            }
+
+            // hide tooltip when mouse leaves bar
+            var mouseoutHandler = function () {
+                d3.select("#tip").attr("opacity", 0);
+            }
+
+            // creat rectangles for top chart
+            grp.selectAll(".topbar")
+                .data(this.topGroup.all())
+                .enter()
+                .append("rect")
+                .attr("fill", SQL_COLOR)
+                .attr("class", "topbar")
+                .on("click", clickHandler)
+                .on("dblclick", dblclickHandler)
+                .on("contextmenu", contextMenuHandler)
+                .on("mouseover", topMouseoverHandler)
+                .on("mouseout", mouseoutHandler);
+
+            // create rectangles for bottom chart
+            grp.selectAll(".btmbar")
+                .data(this.btmGroup.all())
+                .enter()
+                .append("rect")
+                .attr("fill", SHAREPOINT_COLOR)
+                .attr("class", "btmbar")
+                .on("click", clickHandler)
+                .on("dblclick", dblclickHandler)
+                .on("contextmenu", contextMenuHandler)
+                .on("mouseover", btmMouseoverHandler)
+                .on("mouseout", mouseoutHandler);
+
+            // add x-axis labels
+            grp.selectAll(".xLabel")
+                .data(labels)
+                .enter()
+                .append("text")
+                .attr("class", "xLabel")
+                .text(function (d) { return d; })
+                .attr("text-anchor", "middle")
+                .attr("transform", function (d, i) {
+                    x = Y_AXIS_PADDING + sc.barWidth * i;
+                    y = height - 4;
+                    if (!sc.lablesBetween) { x += sc.barWidth / 2;}
+                    return "translate(" + x + ", " + y + ")";
+                })
+                .attr("width", sc.barWidth)
+                .attr("height", 20);
+
+            // add x-axis ticks
+            grp.selectAll(".xTicks")
+                .data(labels)
+                .enter()
+                .append("line")
+                .attr("class", "xTick")
+                .attr("x1", function (d, i) {
+                    if (sc.lablesBetween) { return Y_AXIS_PADDING + sc.barWidth * i - 1;}
+                    return Y_AXIS_PADDING + sc.barWidth * i - 1 + sc.barWidth / 2;
+                })
+                .attr("x2", function (d, i) {
+                    if (sc.lablesBetween) { return Y_AXIS_PADDING + sc.barWidth * i - 1; }
+                    return Y_AXIS_PADDING + sc.barWidth * i - 1 + sc.barWidth / 2;
+                })
+                .attr("y1", function () { return height - X_AXIS_PADDING + 1; })
+                .attr("y2", function () { return height - X_AXIS_PADDING + 7; })
+                .style("stroke", TEXT_COLOR);
+
+            // build the full y-axis
+            grp.append("g")
+                .attr("id", "topYAxis")
+                .attr("class", "yAxis")
+                .attr("width", Y_AXIS_PADDING)
+                .attr("height", sc.plotHeight)
+                .attr("transform", "translate("+(Y_AXIS_PADDING - 2)+"," + (TITLE_PADDING + 2) + ")");
+
+            // build the half y-axis
+            grp.append("g")
+                .attr("id", "btmYAxis")
+                .attr("class", "yAxis")
+                .attr("width", Y_AXIS_PADDING)
+                .attr("height", sc.plotHeight/2)
+                .attr("transform", "translate(" + (Y_AXIS_PADDING - 2) + "," + (TITLE_PADDING + sc.plotHeight / 2 + 6) + ")");
+        }
+
+        // set all selection statuses to the same "status" value
+        SplitChart.prototype.setAllStatuses = function (status) {
+            a = this.btmGroup.all()
+            for (j = 0; j < a.length; j++) {
+                this.selectionStatus[a[j].key] = status;
+            }
+        }
+
+        // set the crossfilter dimension filter based on the current selections
+        SplitChart.prototype.filterMe = function () {
+            ss = this.selectionStatus;
+            this.topDim.filter(function (key) { return ss[key]; });
+            this.btmDim.filter(function (key) { return ss[key]; });
+        }
+
+        // adjust the rendering of the SplitChart based on the latest values in the groups,
+        // the selected bars, and the chartType
+        SplitChart.prototype.refresh = function () {
+
+            // for stacked charts, save the values of the bottom bars in the top bars
+            // to allow y values to be set properly
+            if (chartType == STACKED)
+            {
+                for (i=0; i < this.btmGroup.all().length; i++)
+                {
+                    this.topGroup.all()[i].btmValue = this.btmGroup.all()[i].value;
+                }
+            }
+
+            // figure out the height scaling based on whatever is currently the greatest value in the groups
+            switch (chartType) {
+                case TOP_BOTTOM:
+                    this.heightScale = d3.scale.linear()
+                        .domain([0, Math.max(d3.max(this.btmGroup.all(), function (d) { return d.value; }),
+                                             d3.max(this.topGroup.all(), function (d) { return d.value; }))])
+                        .range([0, this.plotHeight / 2 - 2 - 4]);
+                    break;
+                case LEFT_RIGHT:
+                    this.heightScale = d3.scale.linear()
+                        .domain([0, Math.max(d3.max(this.btmGroup.all(), function (d) { return d.value; }),
+                                             d3.max(this.topGroup.all(), function (d) { return d.value; }))])
+                        .range([0, this.plotHeight-2]);
+                    break;
+                case SINGLE:
+                    this.heightScale = d3.scale.linear()
+                        .domain([0, d3.max(this.btmGroup.all(), function (d) { return d.value; })])
+                        .range([0, this.plotHeight-2]);
+                    break;
+                case STACKED:
+                    this.heightScale = d3.scale.linear()
+                        .domain([0, d3.max(this.topGroup.all(), function (d) { return d.value + d.btmValue; })])
+                        .range([0, this.plotHeight-2]);
+                    break;
+            }
+
+            // store reference to splitchart in variable not called this
+            var sc = this;
+
+            // update the y-axis using the height scale
+            var ax = d3.svg.axis()
+                .scale(sc.heightScale.copy().domain(sc.heightScale.domain().reverse()))
+                .orient("left")
+                .ticks(chartType == TOP_BOTTOM ? 4 : 8);
+            d3.select("#" + this.id)
+                .select("#topYAxis")
+                .transition()
+                .duration(500)
+                .call(ax);
+            d3.select("#" + this.id)
+                .select("#btmYAxis")
+                .transition()
+                .duration(500)
+                .call(ax)
+                .attr("opacity", function () { return chartType == TOP_BOTTOM ? 1 : 0; });
+
+            // update the heights and x/y positions of the top bars
+            d3.select("#" + this.id)
+                .selectAll(".topbar")
+                .transition()
+                .duration(500)
+                .attr("height", function (d) { if (chartType == SINGLE) { return 0; } return sc.heightScale(d.value); })
+                .attr("transform", function (d, i) {
+                    var y, x;
+                    switch(chartType) {
+                        case TOP_BOTTOM:
+                            y = (sc.plotHeight / 2) + TITLE_PADDING - sc.heightScale(d.value) - 4;
+                            x = Y_AXIS_PADDING + sc.barWidth * i;
+                            break;
+                        case LEFT_RIGHT:
+                            y = sc.plotHeight + TITLE_PADDING - sc.heightScale(d.value);
+                            x = Y_AXIS_PADDING + sc.barWidth * i + 1;
+                            break;
+                        case SINGLE:
+                            y = sc.plotHeight + TITLE_PADDING - sc.heightScale(d.value);
+                            x = Y_AXIS_PADDING + sc.barWidth * i;
+                            break;
+                        case STACKED:
+                            y = sc.plotHeight + TITLE_PADDING - sc.heightScale(d.value) - sc.heightScale(d.btmValue);
+                            x = Y_AXIS_PADDING + sc.barWidth * i;
+                            break;
+                    } 
+                    return "translate("+x+","+y+")";
+                })
+                .attr("width", function () { if (chartType == LEFT_RIGHT) { return sc.barWidth / 2 - 2; } return sc.barWidth - 2; })
+                .attr("fill-opacity", function (d) { if (sc.selectionStatus[d.key]) { return 1; } return 0.5; });
+
+            // update the heights and x/y positions of the bottom bars
+            d3.select("#" + this.id)
+                .selectAll(".btmbar")
+                .transition()
+                .duration(500)
+                .attr("height", function (d, i) { return sc.heightScale(d.value); })
+                .attr("transform", function (d, i) {
+                    var y = sc.plotHeight + TITLE_PADDING - sc.heightScale(d.value), 
+                        x;
+                    switch(chartType) {
+                        case TOP_BOTTOM:
+                            x = Y_AXIS_PADDING + sc.barWidth * i;
+                            break;
+                        case LEFT_RIGHT:
+                            x = Y_AXIS_PADDING + sc.barWidth * i + sc.barWidth / 2 - 1;
+                            break;
+                        case SINGLE:
+                            x = Y_AXIS_PADDING + sc.barWidth * i;
+                            break;
+                        case STACKED:
+                            x = Y_AXIS_PADDING + sc.barWidth * i;
+                            break;
+                    } 
+                    return "translate("+x+","+y+")";
+                })
+                .attr("width", function () { if (chartType == LEFT_RIGHT) { return sc.barWidth / 2 - 2; } return sc.barWidth - 2; })
+                .attr("fill-opacity", function (d) { if (sc.selectionStatus[d.key]) { return 1; } return 0.5; });
+        }
+
+        // create a clss that makes a toggle button for changing the chart type
+        function ChartTypeToggle(id, name, myChartType, x, y) {
+            
+            this.id = id;
+            this.myChartType = myChartType;
+
+            var t = this;
+
+            // create the group
+            var grp = mySvg.append("g")
+                .attr("id", id)
+                .attr("class", "chartTypeToggle")
+                .attr("transform", "translate(" + x + "," + y + ")")
+                .attr("width", BUTTON_WIDTH)
+                .attr("height", BUTTON_HEIGHT)
+                .on("click", function () { t.select(); });
+
+            // add the rect
+            grp.append("rect")
+                .attr("width", BUTTON_WIDTH)
+                .attr("height", BUTTON_HEIGHT)
+                .attr("fill", BUTTON_COLOR);
+
+            // show the name on the button
+            grp.append("text")
+                .attr("x", BUTTON_WIDTH / 2)
+                .attr("y", BUTTON_HEIGHT - 5)
+                .attr("width", BUTTON_WIDTH)
+                .attr("height", BUTTON_HEIGHT)
+                .attr("text-anchor", "middle")
+                .text(name);
+
+            // add a rect to make mouse hovers look nicer
+            grp.append("rect")
+                .attr("width", BUTTON_WIDTH)
+                .attr("height", BUTTON_HEIGHT)
+                .attr("opacity", 0);
+                
+        }
+
+        // update the charts when a ChartTypeToggle is selected
+        ChartTypeToggle.prototype.select = function () {
+            chartType = this.myChartType;
+            refreshAll();
+            d3.selectAll(".chartTypeToggle").attr("opacity", 0.5);
+            d3.select("#"+this.id).attr("opacity", 1);
+        }
+        
+    </script>
+
+</body>
+</html>
