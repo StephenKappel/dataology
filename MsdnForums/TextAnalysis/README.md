@@ -1,4 +1,5 @@
 In this root directory, you will find:
+
 - "Text Analysis of Technical Support Documents.pdf" - This is my paper. It explains why I chose my topic, describes how I attempted to solve text analysis-related problems, and summarizes my results.
 - "Text Analysis of Technical Support Documents.pptx" - This is the PowerPoint version of my paper that I plan to present to the class.
 
